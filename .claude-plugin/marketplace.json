@@ -1,0 +1,16 @@
+{
+  "name": "ifixai",
+  "description": "iFixAi for Claude Code, independent auditing for the AI agent you actually deployed. Red teaming plus operational assurance, graded by an independent judge model against a fixed passing bar.",
+  "owner": {
+    "name": "iFixAi",
+    "url": "https://ifixai.ai"
+  },
+  "plugins": [
+    {
+      "name": "ifixai",
+      "source": "./plugin",
+      "description": "Independent audit for AI agents, run against the one you actually deployed. Connect your agent's endpoint, simulate red-teaming and operational-assurance inspections against it, and get an audit back: what it got wrong, with the prompt and its own reply as evidence. Graded by an independent judge model that iFixAi picks, against a fixed passing bar you cannot tune. If your own agent runs the judge model, say so, because that run is not independent. Billed in credits and quoted before anything runs.",
+      "version": "0.1.0"
+    }
+  ]
+}
