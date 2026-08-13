@@ -25,9 +25,9 @@ password, and your agent's credential is stored server-side and never returned.
 
 ## Requirements
 
-- An iFixAi account with a workspace and credits. iFixAi is in private beta:
-  create an account at https://ifixai.ai and an
-  operator will open your workspace.
+- An iFixAi account. iFixAi is in private beta: signing in from inside Claude
+  Code is the whole signup and it logs your request. Until it is approved the
+  tools say so plainly.
 - An agent reachable at a public HTTPS endpoint speaking OpenAI-shaped chat
   completions. Private and loopback addresses are refused when dialled.
 

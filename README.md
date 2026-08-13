@@ -28,9 +28,9 @@ in credits.
 
 ## Getting access
 
-iFixAi is in private beta. Create an account at
-https://ifixai.ai and an operator opens your workspace.
-Until then the tools will tell you plainly that you are not in yet.
+iFixAi is in private beta. Signing in from inside Claude Code is the whole
+signup, and it logs your request. Until it is approved the tools say so plainly,
+so there is nothing to chase.
 
 You also need an agent reachable at a public HTTPS endpoint speaking
 OpenAI-shaped chat completions.
