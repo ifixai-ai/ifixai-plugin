@@ -1,6 +1,6 @@
 # iFixAi (Claude Code plugin)
 
-Independent auditing for AI agents, from inside Claude Code. Connect the agent
+Independent auditing for AI agents, from inside your editor. Connect the agent
 you actually deployed, simulate the inspections against it, and get back an
 audit of what it got wrong with the evidence attached.
 
@@ -25,9 +25,9 @@ password, and your agent's credential is stored server-side and never returned.
 
 ## Requirements
 
-- An iFixAi account. iFixAi is in private beta: signing in from inside Claude
-  Code is the whole signup and it logs your request. Until it is approved the
-  tools say so plainly.
+- An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
+  straight away: the 45 open-source inspections, run on your own machine with
+  your own LLM key. A paid workspace adds the other 57 and runs them for you.
 - An agent reachable at a public HTTPS endpoint speaking OpenAI-shaped chat
   completions. Private and loopback addresses are refused when dialled.
 

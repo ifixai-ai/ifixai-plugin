@@ -43,6 +43,19 @@ plan immediately, with no approval and no waiting.
 You also need an agent reachable at a public HTTPS endpoint speaking
 OpenAI-shaped chat completions.
 
+## Other clients
+
+The plugin is the Claude Code packaging. The connector underneath is a plain MCP
+server, so any client can use it directly:
+
+```
+https://mcp.ifixai.ai/mcp
+```
+
+Claude, Cursor, VS Code and Windsurf take it as a remote MCP server in connector
+settings. ChatGPT takes it as a custom connector with developer mode on. Full
+setup and the tool list: https://ifixai.ai
+
 ## Links
 
 - Product: https://ifixai.ai
