@@ -1,6 +1,6 @@
 ---
 name: ifixai
-description: Run an independent iFixAi audit of the user's deployed agent through the hosted service, checking whether it does the job it is supposed to do given their business rules and org structure, and whether it can be pushed outside them. You are the operator who finds the agent in their repo, confirm it, gather what it is meant to do, connect its HTTP endpoint, quote the cost, run the audit and explain the scorecard. Use when the user asks to audit, inspect, red-team or stress-test an agent they have deployed, to check their iFixAi credits, or to read a past run.
+description: Run an independent iFixAi audit of the user's deployed agent, free on their own machine or hosted on a paid workspace, checking whether it does the job it is supposed to do given their business rules and org structure, and whether it can be pushed outside them. You are the operator who finds the agent in their repo, confirm it, gather what it is meant to do, connect its HTTP endpoint, quote the cost, run the audit and explain the scorecard. Use when the user asks to audit, inspect, red-team or stress-test an agent they have deployed, to check their iFixAi credits, or to read a past run.
 ---
 
 # iFixAi: audit your deployed agent
@@ -20,28 +20,51 @@ agent's own reply.
 confirm it in plain language, connect their endpoint, and explain the result. The
 user never memorises a flag.
 
-**This path always needs a reachable HTTP endpoint.** The hosted service dials
-the agent itself. There is no local or bare-model fallback here: if no endpoint
-exists, say so and stop rather than testing something that is not their agent.
+**Either path needs a reachable HTTP endpoint.** Something dials the agent: us on
+a paid workspace, their own machine on the free plan. There is no bare-model
+fallback, so if no endpoint exists, say so and stop rather than testing something
+that is not their agent.
 
-## Step 0: check they can get in
+## Step 0: find out which plan they are on
 
-Call `get-wallet` first. It is free and it answers three things at once: are they
-signed in, do they have a workspace, do they have credits.
+Call `get-plan` first. It answers for everyone and tells you which of the two
+paths below you are on: `free` (runs on their machine) or `paid` (we run it).
 
-**If the wallet is empty**, that is not the same as having no access. Say what a
-run of the size they want would cost, and offer `request-credits` for that amount.
-`list-credit-requests` shows anything already pending. Approval is manual with no
-automatic alert behind it, so tell them to email support@ifixai.ai if it is urgent.
+**Free.** Nothing is billed and nothing is saved with us. The audit runs in their
+own shell, on their own LLM key, against the open-source inspections. Go to
+**Step 0a**, then join the normal flow at Step 1: discovery, the agent, and the
+fixture all work the same.
 
-**If `get-wallet` comes back as an error, stop there.** Do not match on wording,
-the exact strings change; treat any error from this first call as "no access yet".
-Today they read like "This account is not on the iFixAi access list", "This
-account is not a member of an iFixAi workspace" or "This workspace has no iFixAi
-backend tenant yet".
+**Paid.** Call `get-wallet` for the balance. An empty wallet is not the same as
+no access: say what the run they want would cost and offer `request-credits` for
+that amount. `list-credit-requests` shows anything pending. Approval is manual
+with no alert behind it, so say to email support@ifixai.ai if it is urgent.
 
-Relay the message, point them at https://ifixai.ai, and stop. Do not retry and do
-not start discovery: everything below spends their time for nothing.
+**If a tool refuses, do not match on wording, the strings change.** A refusal
+naming a paid workspace means they are on the free plan and that tool is not part
+of it, so switch to the free path rather than stopping. "Paused" or "still being
+set up" is neither plan: relay it and stop.
+
+## Step 0a: the free path
+
+On the free plan, `run-inspection` does not start a run. It returns a **recipe**:
+a `command` to run in their shell plus `steps` for anyone without one. Hand them
+the command, or run it for them if they ask. It needs their own
+`OPENROUTER_API_KEY` for the judge, and it dials their agent from their machine,
+so their keys never reach us.
+
+What differs from the paid flow below:
+
+- **`author-fixture` is paid**, because it spends our tokens. Write the fixture
+  yourself from what discovery found, save it to a file, and check it with
+  `uvx 'ifixai[openrouter]@3.3.0' validate <file>`. Free and offline.
+- **Pass `fixturePath`, not the fixture itself.** The command reads it off their
+  disk. Pass `endpoint` too: there is no saved connection on this plan.
+- **`list-inspections` shows what this plan can run.** If they name an inspection
+  that is not on it, the call is refused whole and nothing runs. Say it is one of
+  the iFixAi-only inspections, and offer `request-credits`.
+- **No quote, no wallet, no saved history, no hosted report.** The scorecard
+  prints in their terminal. Skip Steps 6 to 8 and read the result with them.
 
 ## 1. Discover: read before asking
 
@@ -133,7 +156,9 @@ they cannot share, stop and let them redact it first.
 committing to anything.
 
 Send the description to `author-fixture` with the agent's name. The service turns
-it into the fixture the audit grades against. Free, no credits.
+it into the fixture the audit grades against. It costs no credits, but it is a
+paid-workspace tool: on the free plan, write the fixture yourself and check it
+with `uvx 'ifixai[openrouter]@3.3.0' validate <file>` instead.
 
 Give it everything discovery found: the system prompt verbatim if you have it, the
 roles and their authority limits, the tools, the data it reads, the approval chains
@@ -232,8 +257,12 @@ first, each with the prompt that caused it and the agent's own reply.
 - **Content leaves their machine** (flagged at Step 4): the description, the
   probes and the agent's replies all reach iFixAi and its judge model.
 
-## If the user has no access
+## If the user has no workspace
 
-iFixAi is in private beta. If any tool reports that, relay the message and send
-them to https://ifixai.ai. Their sign-in already registered the request, so there
-is nothing to chase and nothing to debug. Do not retry the tool.
+That is the free plan, not a wall. Signing in is enough: run the audit locally
+(Step 0a) and offer `request-credits` when they want the iFixAi-only inspections,
+a run we execute, saved history or the report.
+
+A **paused** workspace or one **still being set up** is different: neither is the
+free plan. Relay what the tool said, send them to https://ifixai.ai, and stop.
+Do not retry.

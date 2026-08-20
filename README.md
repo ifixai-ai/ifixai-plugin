@@ -4,7 +4,7 @@ Independent auditing for AI agents, from inside Claude Code. This repo carries
 the `ifixai` plugin: a connector to iFixAi's hosted service.
 
 ```
-/plugin marketplace add ifixai-ai/ifixai-connector
+/plugin marketplace add ifixai-ai/ifixai-plugin
 /plugin install ifixai@ifixai
 ```
 
@@ -21,16 +21,24 @@ fabrication, manipulation, deception, unpredictability, opacity.
 
 ## What's in this repo
 
-Only the connector: a plugin manifest, an MCP server pointer, and a skill that
-tells Claude the order to call things in. There is no engine here. The
-inspections, probes, judges and scoring all run server-side, and work is billed
-in credits.
+Only the plugin: a manifest, an MCP server pointer, and a skill that tells Claude
+the order to call things in. There is no engine here. The inspections, probes,
+judges and scoring live in iFixAi.
+
+## Two tiers
+
+**Free.** Sign in and the 45 open-source inspections run on your own machine,
+with your own LLM key, against your own agent. Nothing is billed, nothing is
+saved with us, and your key never reaches us.
+
+**Paid.** A workspace adds the 57 iFixAi-only inspections, runs we execute for
+you, saved history and the report. Ask for one with `request-credits`; a person
+approves it.
 
 ## Getting access
 
-iFixAi is in private beta. Signing in from inside Claude Code is the whole
-signup, and it logs your request. Until it is approved the tools say so plainly,
-so there is nothing to chase.
+Signing in from inside Claude Code is the whole signup. It puts you on the free
+plan immediately, with no approval and no waiting.
 
 You also need an agent reachable at a public HTTPS endpoint speaking
 OpenAI-shaped chat completions.

@@ -16,7 +16,7 @@ inspections, probes, judges and scoring all run server-side, billed in credits.
 ## Install
 
 ```
-/plugin marketplace add ifixai-ai/ifixai-connector
+/plugin marketplace add ifixai-ai/ifixai-plugin
 /plugin install ifixai@ifixai
 ```
 
