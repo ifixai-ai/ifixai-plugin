@@ -41,7 +41,8 @@ password, and your agent's credential is stored server-side and never returned.
 - **Runs**: quote the cost, start, cancel, poll status, read the frozen report.
 - **Coverage**: which inspections your recent runs actually exercised.
 
-Only `run-inspection` spends credits, and cancelling returns the whole hold.
+Only `run-inspection` spends credits. Cancelling charges just the model spend the
+run had already used, never more than the quote, and returns the rest of the hold.
 A credit request is reviewed manually with no automatic alert behind it, so email
 support@ifixai.ai if it is urgent.
 

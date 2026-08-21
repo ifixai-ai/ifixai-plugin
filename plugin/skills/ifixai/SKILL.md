@@ -225,8 +225,10 @@ whether or not this session stays open. Runs take minutes to tens of minutes.
 
 Poll `get-run`. Do not busy-loop: check, tell the user it is running, and check
 again after a reasonable pause. `list-runs` finds an earlier run when they ask
-about one whose id they did not keep. If they want to stop, `cancel-run` returns the
-entire credit hold and the run produces no report.
+about one whose id they did not keep. If they want to stop, `cancel-run` charges only
+the model spend the run had already used, capped at the quote, and returns the rest of
+the hold. Tell them that before they cancel: `settled_credits` on the answer is what
+they paid, and the run produces no report.
 
 ## 9. Report
 
