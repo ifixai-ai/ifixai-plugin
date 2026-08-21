@@ -1,0 +1,133 @@
+<title>iFixAi MCP connector: privacy policy</title>
+<style>
+  :root {
+    --bg: #0b0b10; --panel: #15151a; --panel-2: #26262c; --border: #2a2a34;
+    --text: #e4e4e7; --muted: #9ca3af; --dim: #6b6b70;
+    --orange: #ff8b5c; --green: #4ade80; --violet: #a78bfa; --blue: #60a5fa;
+    --amber: #fbbf24; --red: #ff6363;
+    --mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--mono); font-size: 15px; line-height: 1.65;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 56px 22px 96px; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 26px; margin-bottom: 34px; }
+  .eyebrow { color: var(--orange); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { font-size: 26px; margin: 12px 0 8px; letter-spacing: -.02em; }
+  h2 { font-size: 17px; margin: 40px 0 12px; }
+  h2::before { content: "## "; color: var(--orange); }
+  p, li { color: var(--muted); }
+  li { margin: 5px 0; }
+  strong { color: var(--text); font-weight: 600; }
+  a { color: var(--blue); }
+  code {
+    background: var(--panel-2); border: 1px solid var(--border);
+    padding: 1px 5px; border-radius: 3px; font-size: 13px; color: var(--orange);
+  }
+  .lead { color: var(--text); font-size: 16px; }
+  .meta { color: var(--dim); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--dim); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: .1em; }
+  td:first-child { color: var(--orange); }
+  td { color: var(--muted); }
+  .scroll { overflow-x: auto; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 2px solid var(--green); border-radius: 6px;
+    padding: 14px 18px; margin: 20px 0;
+  }
+  .panel p { margin: 0; }
+  .todo {
+    background: #2a1a0a; border: 1px dashed var(--amber); color: var(--amber);
+    padding: 2px 7px; border-radius: 3px; font-size: 13px;
+  }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--dim); font-size: 13px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">iFixAi · MCP connector</div>
+  <h1>Privacy policy</h1>
+  <p class="lead">What the iFixAi MCP connector collects, where it goes, and how long we keep it.</p>
+  <p class="meta">Last updated: 20 August 2026 · Applies to the connector at <code>mcp.ifixai.ai</code> and the iFixAi hosted service behind it.</p>
+</header>
+
+<p>iFixAi is operated by <span class="todo">LEGAL ENTITY NAME AND REGISTERED ADDRESS</span>. Questions about this policy or your data: <a href="mailto:support@ifixai.ai">support@ifixai.ai</a>.</p>
+
+<h2>What we collect</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Data</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Email address, account id</td><td>To identify you and find your workspace. Supplied by your iFixAi sign-in, not by your AI client.</td></tr>
+    <tr><td>Workspace membership</td><td>To scope everything you do to your own organisation.</td></tr>
+    <tr><td>Agent endpoint details</td><td>The URL, headers and credential you register, so we can dial your agent.</td></tr>
+    <tr><td>Your agent description</td><td>The text you submit to author a fixture, and the fixture produced from it.</td></tr>
+    <tr><td>Inspection transcripts</td><td>The prompts we send your agent and the replies it returns. This is the evidence in your report.</td></tr>
+    <tr><td>Run and billing records</td><td>Run status, timing, grade, and credits quoted and settled.</td></tr>
+    <tr><td>Usage records</td><td>Which tools you call, when, from which AI client, and whether the call succeeded or was refused. Your account id is stored as a one-way hash and only the domain of your email is kept, never the address. It tells us which parts of the product work and which refusals people hit.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="panel">
+  <p><strong>We do not collect your AI client conversation.</strong> The connector receives only the arguments of the tool calls you approve. It has no access to the rest of your chat, your files, or your other connectors.</p>
+</div>
+
+<h2>Your agent's credential</h2>
+<p>The credential you give us to reach your agent is stored server-side and <strong>never returned</strong>, not to your AI client, not to you, not in any report or error message. It is used for one thing: authenticating to the endpoint you registered. Headers that could smuggle a credential into a report are rejected at submission.</p>
+
+<h2>What we send to third parties</h2>
+<p>Running an inspection means your agent's replies are graded by a language model we don't operate. That is the one place your content leaves our systems.</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>Processor</th><th>Receives</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>OpenRouter</td><td>Inspection prompts and your agent's replies</td><td>Grading. Routed to the judge model named in your report.</td></tr>
+    <tr><td>Supabase</td><td>Account, workspace and run records</td><td>Authentication and database hosting.</td></tr>
+    <tr><td>Manufact (mcp-use)</td><td>Connector traffic in transit</td><td>Hosting the MCP server.</td></tr>
+    <tr><td>Resend</td><td>Your email address</td><td>Sign-in and service email.</td></tr>
+  </tbody>
+</table>
+</div>
+<p>We do not sell your data, and we do not share it for advertising.</p>
+<p>Grading is performed by a third-party model provider under their own terms. We do not control that provider's retention or training practices and do not claim on their behalf that your content is excluded from either. If your content must not leave your own infrastructure, iFixAi is not the right tool for it.</p>
+
+<h2>Where it's stored</h2>
+<p>Account and run data is held in our Supabase project in the EU (Frankfurt, <code>eu-central-1</code>). Credentials are held in an encrypted secrets store, separate from the application database.</p>
+
+<h2>How long we keep it</h2>
+<div class="scroll">
+<table>
+  <tbody>
+    <tr><td>Account and workspace</td><td>For as long as your account exists.</td></tr>
+    <tr><td>Reports and transcripts</td><td>Until you close your account, or until you ask us to delete them. They contain your agent's replies, so if you want a shorter window for a specific engagement, tell us and we'll agree one.</td></tr>
+    <tr><td>Registered credentials</td><td>Until you delete the connection or close your account.</td></tr>
+    <tr><td>Billing records</td><td>Kept after account closure for as long as accounting and tax law requires.</td></tr>
+    <tr><td>Usage records</td><td>24 months, then deleted.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Your rights</h2>
+<p>You can ask us to show you, correct, export or delete your data. Email <a href="mailto:support@ifixai.ai">support@ifixai.ai</a> and we'll respond within <strong>7 days</strong>. If you're in the UK or EU, you also have the right to complain to your data protection authority.</p>
+<p>Disconnecting the connector stops all future access immediately. It does not delete data already stored. Ask us if that's what you want.</p>
+
+<h2>Security</h2>
+<ul>
+  <li>Everything is HTTPS. The connector refuses unauthenticated requests.</li>
+  <li>Access uses OAuth 2.1. We never see your password.</li>
+  <li>Every query is scoped to your workspace. There is no way for a tool call to name someone else's.</li>
+  <li>Agent endpoints must be public addresses. Anything resolving to a private or loopback address is refused by the egress guard at the moment we dial it.</li>
+</ul>
+
+<h2>Changes</h2>
+<p>If we change this policy materially we'll update this page and notify account holders by email before it takes effect.</p>
+
+<footer>
+  iFixAi · <a href="https://ifixai.ai">ifixai.ai</a> · <a href="index.html">Documentation</a>
+</footer>
+</div>

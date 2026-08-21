@@ -1,0 +1,187 @@
+<title>iFixAi MCP connector: setup and usage</title>
+<style>
+  :root {
+    --bg: #0b0b10; --panel: #15151a; --panel-2: #26262c; --border: #2a2a34;
+    --text: #e4e4e7; --muted: #9ca3af; --dim: #6b6b70;
+    --orange: #ff8b5c; --green: #4ade80; --violet: #a78bfa; --blue: #60a5fa;
+    --amber: #fbbf24; --red: #ff6363;
+    --mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--mono); font-size: 15px; line-height: 1.65;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 22px 96px; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 26px; margin-bottom: 38px; }
+  .eyebrow { color: var(--orange); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { font-size: 27px; margin: 12px 0 8px; letter-spacing: -.02em; }
+  h2 { font-size: 18px; margin: 44px 0 14px; color: var(--text); }
+  h2::before { content: "## "; color: var(--orange); }
+  h3 { font-size: 15px; margin: 26px 0 8px; color: var(--violet); }
+  p, li { color: var(--muted); }
+  li { margin: 5px 0; }
+  strong { color: var(--text); font-weight: 600; }
+  a { color: var(--blue); }
+  code {
+    background: var(--panel-2); border: 1px solid var(--border);
+    padding: 1px 5px; border-radius: 3px; font-size: 13px; color: var(--orange);
+  }
+  pre {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--text);
+  }
+  pre code { background: none; border: 0; padding: 0; color: inherit; }
+  .lead { color: var(--text); font-size: 16px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 2px solid var(--orange); border-radius: 6px;
+    padding: 14px 18px; margin: 22px 0;
+  }
+  .panel p { margin: 0; }
+  .panel.warn { border-left-color: var(--amber); }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--dim); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: .1em; }
+  td:first-child { color: var(--orange); white-space: nowrap; }
+  td { color: var(--muted); }
+  .scroll { overflow-x: auto; }
+  .prompt { border-left: 2px solid var(--green); padding-left: 14px; margin: 14px 0; color: var(--text); }
+  footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--border); color: var(--dim); font-size: 13px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">iFixAi · MCP connector</div>
+  <h1>Inspect your AI agent from your coding assistant</h1>
+  <p class="lead">iFixAi runs an operational-misalignment diagnostic against an AI agent you already have deployed. This connector lets Claude or ChatGPT drive it: describe your agent, register its endpoint, run inspections, and read what went wrong.</p>
+</header>
+
+<h2>What it does</h2>
+<p>iFixAi dials <strong>your</strong> agent over its own HTTP endpoint and puts it through up to 102 inspections: does it invent facts, exceed its authority, leak data it shouldn't, change its story under pressure, act when it should escalate. You get a graded report with the exact prompt that caused each failure and the agent's exact reply.</p>
+<p>It reports what your agent got wrong. It does not prescribe fixes.</p>
+
+<h2>Two plans, one connector</h2>
+<ul>
+  <li><strong>Free.</strong> Signing in is enough. You get the 45 open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
+  <li><strong>Paid.</strong> A workspace with credits unlocks all 102 inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Upgrade from the chat with <code>request-credits</code>.</li>
+</ul>
+
+<h2>What you need first</h2>
+<ul>
+  <li>An <strong>iFixAi sign-in</strong>. That alone puts you on the free plan.</li>
+  <li>For hosted runs: a <strong>paid workspace with credits</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before spending anything. Free local runs have no such limit: your machine dials the endpoint, localhost included.</li>
+</ul>
+
+<h2>Connect</h2>
+<p>Add the server URL in your client's connector settings:</p>
+<pre><code>https://mcp.ifixai.ai/mcp</code></pre>
+<p>Your client will open a browser window to sign in to iFixAi and ask you to approve access. That's standard OAuth 2.1. The connector never sees your password, and iFixAi never sees your agent's credentials after you store them.</p>
+
+<div class="panel">
+  <p><strong>Not sure which plan you're on?</strong> Ask for <code>get-plan</code> first. Every paid-only tool tells a free caller plainly what it does and that a paid workspace unlocks it, rather than leaving you guessing.</p>
+</div>
+
+<h2>The order things happen in</h2>
+<p>On the free plan, steps 2–3 fall away: <code>run-inspection</code> returns the local command directly, with your endpoint and fixture file passed as arguments.</p>
+<ol>
+  <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes a <em>fixture</em>: the spec iFixAi grades against. Free.</li>
+  <li><strong>Register the endpoint.</strong> URL plus credential. Test it before spending anything.</li>
+  <li><strong>Quote the run.</strong> See the credit cost and how much of your selection can actually reach your agent.</li>
+  <li><strong>Run.</strong> Returns immediately with a run id; inspections take minutes to tens of minutes.</li>
+  <li><strong>Read the report.</strong> Findings with evidence.</li>
+</ol>
+
+<div class="panel warn">
+  <p><strong>Why the fixture matters.</strong> Without one, iFixAi grades your agent against a generic placeholder, and the result is meaningless. The connector refuses to start a run that would do that.</p>
+</div>
+
+<h2>Example prompts</h2>
+
+<h3>0. Try it free, on your own machine</h3>
+<div class="prompt">"Audit the agent in this repo with iFixAi. I'm on the free plan: write the fixture, then give me the command to run it locally."</div>
+
+<h3>1. Set up and inspect an agent end to end</h3>
+<div class="prompt">"Here's my support agent's system prompt: [paste]. Author an iFixAi fixture from it, register the agent at https://api.example.com/v1/chat/completions with my bearer token, and quote a full inspection."</div>
+
+<h3>2. Check the cost and coverage before committing</h3>
+<div class="prompt">"What would it cost to run the core suite on my agent, and how many of those inspections actually dial it?"</div>
+
+<h3>3. Read the result of a finished run</h3>
+<div class="prompt">"Get run run_ab12… and tell me what my agent got wrong, worst first."</div>
+
+<h3>4. Check the balance</h3>
+<div class="prompt">"How many iFixAi credits do I have left, and what did my last three runs cost?"</div>
+
+<h3>5. Stop a run</h3>
+<div class="prompt">"Cancel the inspection I just started. I picked the wrong suite."</div>
+
+<h2>Tools</h2>
+<p>Six tools answer on the free plan: <code>get-plan</code>, <code>list-inspections</code>, <code>run-inspection</code>, <code>request-credits</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>Tool</th><th>Does</th><th>Costs credits</th></tr></thead>
+  <tbody>
+    <tr><td>get-plan</td><td>Which plan this account is on and where runs execute</td><td>no</td></tr>
+    <tr><td>get-wallet</td><td>Credit balance for your workspace</td><td>no</td></tr>
+    <tr><td>list-inspections</td><td>The inspection roster and what each one checks</td><td>no</td></tr>
+    <tr><td>author-fixture</td><td>Turns your agent's description into a fixture</td><td>no</td></tr>
+    <tr><td>validate-fixture</td><td>Which inspections a fixture can run, and why the rest can't</td><td>no</td></tr>
+    <tr><td>save-fixture</td><td>Stores a fixture against a connection, so a rerun needs no re-authoring</td><td>no</td></tr>
+    <tr><td>get-fixture</td><td>The fixture saved for a connection</td><td>no</td></tr>
+    <tr><td>estimate-run-cost</td><td>Credit quote plus coverage warnings</td><td>no</td></tr>
+    <tr><td>create-connection</td><td>Registers your agent's endpoint and credential</td><td>no</td></tr>
+    <tr><td>test-connection</td><td>Dials your agent once to check it answers</td><td>no</td></tr>
+    <tr><td>list-connections</td><td>Endpoints registered in your workspace</td><td>no</td></tr>
+    <tr><td>run-inspection</td><td>Paid: starts a billed hosted run, returns a run id immediately. Free: returns the command to run locally</td><td><strong>paid only</strong></td></tr>
+    <tr><td>get-run</td><td>Status, grade, score, credits quoted and settled</td><td>no</td></tr>
+    <tr><td>list-runs</td><td>Your runs, newest first</td><td>no</td></tr>
+    <tr><td>get-deliverable</td><td>The frozen report for a finished run</td><td>no</td></tr>
+    <tr><td>get-coverage</td><td>Which inspections your recent runs already exercised</td><td>no</td></tr>
+    <tr><td>request-credits</td><td>Raises a credit request, priced from your billing term</td><td>no</td></tr>
+    <tr><td>list-credit-requests</td><td>Your credit requests and where each one stands</td><td>no</td></tr>
+    <tr><td>cancel-run</td><td>Stops a run; the whole credit hold returns</td><td>refunds</td></tr>
+    <tr><td>search</td><td>Find inspections and your runs by keyword</td><td>no</td></tr>
+    <tr><td>fetch</td><td>One search result as a document</td><td>no</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Choosing what to run</h2>
+<p>Suites range from <code>smoke</code> (3 inspections) to <code>all</code> (102 hosted; the free roster is the 45 open-source inspections). Quote first: <code>estimate-run-cost</code> tells you two things that aren't obvious from the suite name.</p>
+<ul>
+  <li><strong>Whether the selection can produce a passing grade.</strong> Four inspections are gating. A gating inspection you don't run is scored as a failure, so any suite short of <code>all</code> returns a capped grade. Smaller suites are useful diagnostics, not verdicts.</li>
+  <li><strong>How much of it reaches your agent.</strong> About half the roster inspects a governance surface that a plain chat endpoint doesn't expose. Those read inconclusive against an HTTP target.</li>
+</ul>
+
+<h2>Reading a result</h2>
+<table>
+  <tbody>
+    <tr><td>pass</td><td>The agent met the inspection's threshold.</td></tr>
+    <tr><td>fail</td><td>It didn't. The report carries the prompt and the reply.</td></tr>
+    <tr><td>inconclusive</td><td>The inspection couldn't reach a verdict, usually a surface your endpoint doesn't expose. Not a failure, and not a pass either.</td></tr>
+  </tbody>
+</table>
+
+<h2>When something goes wrong</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Message</th><th>Means</th></tr></thead>
+  <tbody>
+    <tr><td>this needs a paid workspace</td><td>You're on the free plan. The message says what the tool does and what paying adds; <code>request-credits</code> upgrades.</td></tr>
+    <tr><td>workspace has no tenant</td><td>Provisioning didn't finish. Ask us.</td></tr>
+    <tr><td>not enough credits</td><td>Top up before running.</td></tr>
+    <tr><td>this run has no fixture</td><td>Author one first, see step 1.</td></tr>
+    <tr><td>backend unreachable</td><td>Ours, not yours. Try again shortly.</td></tr>
+  </tbody>
+</table>
+</div>
+<p>A run keeps going even if your client disconnects. Poll <code>get-run</code> with the id to pick it back up, you're never billed twice for the same start.</p>
+
+<h2>Support</h2>
+<p>Email <a href="mailto:support@ifixai.ai">support@ifixai.ai</a>. Include your run id if it's about a specific run.</p>
+
+<footer>
+  iFixAi · <a href="https://ifixai.ai">ifixai.ai</a> · <a href="privacy.html">Privacy policy</a>
+</footer>
+</div>
