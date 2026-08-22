@@ -86,9 +86,11 @@ stray URLs; you will probe the wrong service. An MCP server `url` in `.mcp.json`
 is a *tool the agent calls*, not its chat endpoint: it feeds the tool list, never
 the connection.
 
-The endpoint must be publicly reachable. Anything resolving to a private or
-loopback address is refused by the egress guard when the service dials it, so a
-`localhost` URL will fail no matter how correct it looks.
+On a paid workspace the endpoint must be publicly reachable: anything resolving
+to a private or loopback address is refused by the egress guard when the service
+dials it, so a `localhost` URL will fail a hosted run no matter how correct it
+looks. On the free plan the run happens on the user's own machine, so a
+`localhost` endpoint is fine there.
 
 **If the scan finds no endpoint**, say what you searched and what you did not
 find, then ask for the agent's public chat-completions URL. Wait. Do not proceed
@@ -226,9 +228,10 @@ whether or not this session stays open. Runs take minutes to tens of minutes.
 Poll `get-run`. Do not busy-loop: check, tell the user it is running, and check
 again after a reasonable pause. `list-runs` finds an earlier run when they ask
 about one whose id they did not keep. If they want to stop, `cancel-run` charges only
-the model spend the run had already used, capped at the quote, and returns the rest of
-the hold. Tell them that before they cancel: `settled_credits` on the answer is what
-they paid, and the run produces no report.
+the model spend the run had already used, rounded up to a 50-credit block like every
+charge and capped at the quote, and returns the rest of the hold. A run quoted at 50
+that has started dialling is therefore charged the full 50. Tell them that before they
+cancel: `settled_credits` on the answer is what they paid, and the run produces no report.
 
 ## 9. Report
 

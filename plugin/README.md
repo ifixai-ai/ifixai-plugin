@@ -28,8 +28,9 @@ password, and your agent's credential is stored server-side and never returned.
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
   straight away: the 45 open-source inspections, run on your own machine with
   your own LLM key. A paid workspace adds the other 57 and runs them for you.
-- An agent reachable at a public HTTPS endpoint speaking OpenAI-shaped chat
-  completions. Private and loopback addresses are refused when dialled.
+- An agent speaking OpenAI-shaped chat completions. For hosted (paid) runs it
+  must be at a public HTTPS endpoint: private and loopback addresses are refused
+  when dialled. Free runs dial from your own machine, so localhost is fine.
 
 ## What it can do
 
@@ -42,7 +43,8 @@ password, and your agent's credential is stored server-side and never returned.
 - **Coverage**: which inspections your recent runs actually exercised.
 
 Only `run-inspection` spends credits. Cancelling charges just the model spend the
-run had already used, never more than the quote, and returns the rest of the hold.
+run had already used, in 50-credit blocks and never more than the quote, and returns
+the rest of the hold.
 A credit request is reviewed manually with no automatic alert behind it, so email
 support@ifixai.ai if it is urgent.
 
