@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.1 — 2026-08-28
+
+- The skill leads with the no-account demo audit (`run-demo-audit`) and
+  explains that sign-in happens in the chat window, not on a website.
+
 ## 0.2.0 — 2026-08-20
 
 - Free tier. Signing in is now enough: the 45 inspections that ship in the

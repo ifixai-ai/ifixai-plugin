@@ -25,10 +25,27 @@ a paid workspace, their own machine on the free plan. There is no bare-model
 fallback, so if no endpoint exists, say so and stop rather than testing something
 that is not their agent.
 
+## Before anything: the demo works without an account
+
+Two tools answer with no sign-in at all: `run-demo-audit` and
+`list-inspections`. Every other tool triggers a sign-in prompt in the chat;
+the account is created right there in the window that opens, never on a
+website first.
+
+If the user is exploring ("what is iFixAi", "show me what it does") or has no
+account yet, lead with `run-demo-audit`. It returns instantly: a real, frozen
+audit of **Riverline Support**, a demo refund bot we built and graded (Grade D).
+Present the grade and the open findings; the locked rows unlock once they sign
+in. Always say it is our demo bot, never imply it is their agent. Then offer
+the natural next step: run the same thing against their own agent, which is
+where sign-in happens.
+
 ## Step 0: find out which plan they are on
 
-Call `get-plan` first. It answers for everyone and tells you which of the two
-paths below you are on: `free` (runs on their machine) or `paid` (we run it).
+Call `get-plan` first. It answers for every signed-in user (signed out, it
+triggers the sign-in prompt, which is fine if their own audit is what they
+asked for) and tells you which of the two paths below you are on: `free`
+(runs on their machine) or `paid` (we run it).
 
 **Free.** Nothing is billed and nothing is saved with us. The audit runs in their
 own shell, on their own LLM key, against the open-source inspections. Go to
