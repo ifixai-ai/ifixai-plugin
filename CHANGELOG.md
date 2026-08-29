@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.7 — 2026-08-29
+
+- Skill compressed ~40% (288 to 182 lines): same rules, half the prose.
+
 ## 0.2.6 — 2026-08-29
 
 - Free runs accept any judge key (OpenRouter, OpenAI, Anthropic, Gemini): the
