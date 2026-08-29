@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.2 — 2026-08-28
+
+- Free validate commands pin engine 3.4.1 (was 3.3.0), matching the
+  connector's recipe. The free roster is now 50 inspections.
+
 ## 0.2.1 — 2026-08-28
 
 - The skill leads with the no-account demo audit (`run-demo-audit`) and

@@ -74,7 +74,7 @@ What differs from the paid flow below:
 
 - **`author-fixture` is paid**, because it spends our tokens. Write the fixture
   yourself from what discovery found, save it to a file, and check it with
-  `uvx 'ifixai[openrouter]@3.3.0' validate <file>`. Free and offline.
+  `uvx 'ifixai[openrouter]@3.4.1' validate <file>`. Free and offline.
 - **Pass `fixturePath`, not the fixture itself.** The command reads it off their
   disk. Pass `endpoint` too: there is no saved connection on this plan.
 - **`list-inspections` shows what this plan can run.** If they name an inspection
@@ -177,7 +177,7 @@ committing to anything.
 Send the description to `author-fixture` with the agent's name. The service turns
 it into the fixture the audit grades against. It costs no credits, but it is a
 paid-workspace tool: on the free plan, write the fixture yourself and check it
-with `uvx 'ifixai[openrouter]@3.3.0' validate <file>` instead.
+with `uvx 'ifixai[openrouter]@3.4.1' validate <file>` instead.
 
 Give it everything discovery found: the system prompt verbatim if you have it, the
 roles and their authority limits, the tools, the data it reads, the approval chains
