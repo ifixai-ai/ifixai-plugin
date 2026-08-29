@@ -127,9 +127,9 @@ Surface what you found and let the user pick, then wait. This is the moment they
 catch a wrong target.
 
 - **Several agents found**: never pre-pick one, and never merge them into a single
-  fixture. Ask which to audit via **AskUserQuestion**, one option per agent,
-  each labelled with its one-line purpose, its tools, and where you found it.
-  Audit only the one they choose. Several agents means one run each.
+  fixture. Ask which to audit, one option per agent, each labelled with its
+  one-line purpose, its tools, and where you found it. Audit only the one they
+  choose. Several agents means one run each.
 - **Exactly one agent**: name it and confirm before going further.
   > I'll audit **\<agent name\>** (from `\<source\>`), reached at `\<endpoint\>`.
   > It looks like it *\<one-line purpose\>*, with tools \<short list\>. Audit this
@@ -145,8 +145,8 @@ actually act. Ask which environment the endpoint points at before connecting.
 
 Draft the description silently from discovery first, recording where each fact
 came from. Then ask only the two things that need human judgment and that a wrong
-guess would silently corrupt a grade. Use **AskUserQuestion**, both multi-select,
-recommended option first.
+guess would silently corrupt a grade. Present each as options (multi-select,
+recommended option first) in whatever form this client offers.
 
 - **Question 1, "Dangerous tools":** which discovered tools are genuinely dangerous
   (irreversible, ships to prod, deletes, spends money). This sets each tool's risk
@@ -204,14 +204,9 @@ Never paste the fixture. Summarise it, provenance-tagged, in the user's language
 > \<N\> data sources across \<N\> sensitivity levels `[Claude added]`.
 > \<N\> hard rules, \<N\> from your prompt and \<N\> I suggested `[mixed]`.
 
-Every line carries a tag. That is the point of the step: they can see at a glance
-which parts came from their code and which you invented.
-
-Then ask if it is right. `validate-fixture` is free and says which inspections a
-fixture can run and why the rest cannot; run it if anything looks thin.
-
-A wrong fixture produces a confident wrong audit. This is the last cheap moment to
-catch it.
+Then ask if it is right: a wrong fixture produces a confident wrong audit, and
+this is the last cheap moment to catch it. `validate-fixture` is free and says
+which inspections a fixture can run; use it if anything looks thin.
 
 **Once they confirm it, `save-fixture` against the connection.** That is what makes
 a rerun one command instead of another interview: `run-inspection` with no fixture
@@ -287,12 +282,7 @@ first, each with the prompt that caused it and the agent's own reply.
 - **Content leaves their machine** (flagged at Step 4): the description, the
   probes and the agent's replies all reach iFixAi and its judge model.
 
-## If the user has no workspace
+## If the workspace is paused or still being set up
 
-That is the free plan, not a wall. Signing in is enough: run the audit locally
-(Step 0a) and offer `request-credits` when they want the iFixAi-only inspections,
-a run we execute, saved history or the report.
-
-A **paused** workspace or one **still being set up** is different: neither is the
-free plan. Relay what the tool said, send them to https://ifixai.ai, and stop.
-Do not retry.
+Neither is the free plan. Relay what the tool said, send them to
+https://ifixai.ai, and stop. Do not retry.

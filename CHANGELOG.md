@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.5 — 2026-08-28
+
+- Skill tightened and made client-neutral (no Claude-Code-only tool names),
+  since the connector now serves it to every MCP client as a prompt.
+
 ## 0.2.4 — 2026-08-28
 
 - Free runs: the operator asks suggested set vs whole suite before running,
