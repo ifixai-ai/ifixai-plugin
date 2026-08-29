@@ -84,6 +84,12 @@ What differs from the paid flow below:
   the iFixAi-only inspections, and offer `request-credits`.
 - **No quote, no wallet, no saved history, no hosted report.** The scorecard
   prints in their terminal. Skip Steps 6 to 8 and read the result with them.
+- **Ask which scope before running.** Two options, their choice: the suggested
+  set for their setup (the top 8 strategic inspections, which always include
+  the live probe inspections graded by rubric judges; under $1 of judge cost
+  on a cheap model) or the whole free suite (all 50; roughly $2 with a Qwen
+  judge, $5 with Gemini Flash). Never name the key vendor in the pitch, just
+  the judge model and the rough cost.
 
 ## 1. Discover: read before asking
 

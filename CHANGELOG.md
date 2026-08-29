@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.4 — 2026-08-28
+
+- Free runs: the operator asks suggested set vs whole suite before running,
+  and states judge cost per model (Qwen, Gemini Flash) without naming vendors.
+
 ## 0.2.3 — 2026-08-28
 
 - Free runs: the operator now offers both ways to execute the recipe, the
