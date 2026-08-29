@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.3 — 2026-08-28
+
+- Free runs: the operator now offers both ways to execute the recipe, the
+  user's own terminal or the assistant's shell, and asks before running.
+
 ## 0.2.2 — 2026-08-28
 
 - Free validate commands pin engine 3.4.1 (was 3.3.0), matching the

@@ -1,7 +1,7 @@
 {
   "name": "ifixai",
   "displayName": "iFixAi",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Third-party auditing for AI agents. Run by a human or by the agent itself, to answer the most crucial question in the AI Agent Economy. Is the agent doing its actual job?",
   "author": {
     "name": "iFixAi",

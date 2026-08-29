@@ -65,8 +65,10 @@ set up" is neither plan: relay it and stop.
 ## Step 0a: the free path
 
 On the free plan, `run-inspection` does not start a run. It returns a **recipe**:
-a `command` to run in their shell plus `steps` for anyone without one. Hand them
-the command, or run it for them if they ask. It needs their own
+a `command` to run in their shell plus `steps` for anyone without one. Offer
+both ways explicitly, their choice: they paste it in their own terminal, or you
+run it for them in your shell. Ask before running it yourself, and if you do,
+stream the scorecard back as it prints. It needs their own
 `OPENROUTER_API_KEY` for the judge, and it dials their agent from their machine,
 so their keys never reach us.
 
