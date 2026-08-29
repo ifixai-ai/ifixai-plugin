@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.6 — 2026-08-29
+
+- Free runs accept any judge key (OpenRouter, OpenAI, Anthropic, Gemini): the
+  operator asks which the user has and the recipe matches it.
+
 ## 0.2.5 — 2026-08-28
 
 - Skill tightened and made client-neutral (no Claude-Code-only tool names),

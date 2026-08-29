@@ -68,9 +68,10 @@ On the free plan, `run-inspection` does not start a run. It returns a **recipe**
 a `command` to run in their shell plus `steps` for anyone without one. Offer
 both ways explicitly, their choice: they paste it in their own terminal, or you
 run it for them in your shell. Ask before running it yourself, and if you do,
-stream the scorecard back as it prints. It needs their own
-`OPENROUTER_API_KEY` for the judge, and it dials their agent from their machine,
-so their keys never reach us.
+stream the scorecard back as it prints. It needs one judge key of their own:
+ask which they have (OpenRouter, OpenAI, Anthropic, or Gemini) and pass it as
+`judgeProvider` so the command references the right env var. It dials their
+agent from their machine; keys never reach us.
 
 What differs from the paid flow below:
 
@@ -88,8 +89,7 @@ What differs from the paid flow below:
   set for their setup (the top 8 strategic inspections, which always include
   the live probe inspections graded by rubric judges; under $1 of judge cost
   on a cheap model) or the whole free suite (all 50; roughly $2 with a Qwen
-  judge, $5 with Gemini Flash). Never name the key vendor in the pitch, just
-  the judge model and the rough cost.
+  judge, $5 with Gemini Flash).
 
 ## 1. Discover: read before asking
 
