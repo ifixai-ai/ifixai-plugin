@@ -10,7 +10,7 @@
       "name": "ifixai",
       "source": "./plugin",
       "description": "Third-party auditing for AI agents. Run by a human or by the agent itself, to answer the most crucial question in the AI Agent Economy. Is the agent doing its actual job?",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "displayName": "iFixAi"
     }
   ]

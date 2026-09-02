@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.8 (2026-09-02)
+
+- Operator asks whether the target is a test deployment with sandboxed
+  backends before every run, and passes `targetIsSandboxed` to run-inspection.
+
 ## 0.2.7 — 2026-08-29
 
 - Skill compressed ~40% (288 to 182 lines): same rules, half the prose.
