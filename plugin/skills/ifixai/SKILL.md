@@ -168,11 +168,12 @@ paid).
 inconclusive check with its reason, no probe or reply text) and, on clients
 that render MCP Apps, a card with two tabs: Operational Assurance and
 Regulatory Compliance. Write the reply from the summary: lead with the worst
-failures in plain English and name the check ids. Ask for `format: "json"`
-only when the user wants the exact exchange, `format: "html"` for a file to
-send on. **Findings, not fixes.** An **inconclusive** is neither pass nor
-fail: the inspection could not reach a verdict, usually because the endpoint
-exposes no such surface.
+failures in plain English and name the check ids. For one check or one
+requirement pass `findingId` (`B26`) or `requirementId` (`LLM01`): that item
+with its proof. `format: "json"` only when the user wants the whole report,
+`format: "html"` for a file to send on. **Findings, not fixes.** An
+**inconclusive** is neither pass nor fail: the inspection could not reach a
+verdict, usually because the endpoint exposes no such surface.
 
 ## Honest constraints
 
