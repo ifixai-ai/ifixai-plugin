@@ -55,11 +55,13 @@ free plan: switch path. "Paused" or "being set up" is neither: relay and stop.
 `run-inspection` returns a **recipe**: a shell `command` plus `steps`. Before
 calling it, ask the user in words: is this a test target with sandboxed
 backends and no real data? The probes try to make the agent misuse its tools.
-Pass their answer as `targetIsSandboxed` (required); never assume yes, and a no
-returns safe-setup steps and no command. Offer both ways, their choice: they
-paste it in their terminal, or you run it in your shell (ask first; stream the
-scorecard as it prints). It needs one judge key of their own: ask which they
-have (OpenRouter, OpenAI, Anthropic, Gemini) and pass it as `judgeProvider`.
+Pass their answer as `targetIsSandboxed` (required); never assume yes. On a
+no, say only this: run a test copy of the agent whose tools cannot reach real
+data or money (a sandbox), then come back. No command, no walkthrough.
+Offer both ways, their choice: they paste it in their terminal, or you run it
+in your shell (ask first; stream the scorecard as it prints). It needs one
+judge key of their own: ask which they have (OpenRouter, OpenAI, Anthropic,
+Gemini) and pass it as `judgeProvider`.
 Keys never reach us.
 
 - **Recommend the scope first**: at least 15 inspections you pick from
@@ -84,7 +86,7 @@ Keys never reach us.
   offer `request-access` with its id: the team gets in touch and walks them
   through a demo. Once, not every turn.
 
-## 0b. If the answer is no: make a test copy
+## 0b. Paid plan, if the answer is no: make a test copy
 
 Start no audit. Set the copy up for them, running the local commands yourself
 where the repo lets you: (a) `ifixai sandbox --fixture <fixture>` starts fake
