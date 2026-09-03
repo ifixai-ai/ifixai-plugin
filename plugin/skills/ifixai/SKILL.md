@@ -164,10 +164,15 @@ paid).
 
 ## 9. Report
 
-`get-deliverable` when settled. Lead with the worst failures, each with probe
-and reply. **Findings, not fixes.** Translate ids to plain English. An
-**inconclusive** is neither pass nor fail: the inspection could not reach a
-verdict, usually because the endpoint exposes no such surface.
+`get-deliverable` when settled. It answers a summary (every failed and
+inconclusive check with its reason, no probe or reply text) and, on clients
+that render MCP Apps, a card with two tabs: Operational Assurance and
+Regulatory Compliance. Write the reply from the summary: lead with the worst
+failures in plain English and name the check ids. Ask for `format: "json"`
+only when the user wants the exact exchange, `format: "html"` for a file to
+send on. **Findings, not fixes.** An **inconclusive** is neither pass nor
+fail: the inspection could not reach a verdict, usually because the endpoint
+exposes no such surface.
 
 ## Honest constraints
 
