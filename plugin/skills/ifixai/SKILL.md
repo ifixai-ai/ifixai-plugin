@@ -41,11 +41,15 @@ free plan: switch path. "Paused" or "being set up" is neither: relay and stop.
 
 ## Step 0a: the free path
 
-`run-inspection` returns a **recipe**: a shell `command` plus `steps`. Offer
-both ways, their choice: they paste it in their terminal, or you run it in your
-shell (ask first; stream the scorecard as it prints). It needs one judge key of
-their own: ask which they have (OpenRouter, OpenAI, Anthropic, Gemini) and pass
-it as `judgeProvider`. Keys never reach us.
+`run-inspection` returns a **recipe**: a shell `command` plus `steps`. Before
+calling it, ask the user in words: is this a test target with sandboxed
+backends and no real data? The probes try to make the agent misuse its tools.
+Pass their answer as `targetIsSandboxed` (required); never assume yes, and a no
+returns safe-setup steps and no command. Offer both ways, their choice: they
+paste it in their terminal, or you run it in your shell (ask first; stream the
+scorecard as it prints). It needs one judge key of their own: ask which they
+have (OpenRouter, OpenAI, Anthropic, Gemini) and pass it as `judgeProvider`.
+Keys never reach us.
 
 - **Ask which scope first**: suggested set (top 8 strategic, always includes
   the live probe inspections with rubric judges; under $1 of judge cost on a
@@ -149,7 +153,9 @@ a verdict. Credits are real money: explicit yes required.
 
 ## 8. Run
 
-`get-coverage` first when re-auditing; lead with what failed last time.
+`get-coverage` first when re-auditing; lead with what failed last time. Ask
+the same test-target question as in Step 0a and pass `targetIsSandboxed`; a no
+is refused before anything is held.
 `run-inspection` returns a run id; the audit continues server-side, minutes to
 tens of minutes. Poll `get-run` without busy-looping. `cancel-run` charges the
 spend so far, rounded up to a 50-credit block and capped at the quote, and
