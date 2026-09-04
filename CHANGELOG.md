@@ -3,6 +3,19 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.2.10 (2026-09-04)
+
+- Step 4 authors from the repo in two calls: select-repo-files with the file
+  list, then author-fixture with the files it asked for. Step 5 recaps with
+  the citation behind each value and the assumed ones as questions.
+
+## 0.2.9 (2026-09-04)
+
+- Step 4 fixes the description's headings, order and source priority (the
+  shape author-fixture is trained on), and gives the free path the reference
+  fixture's per-section rules, so the same agent authored twice gets the same
+  fixture.
+
 ## 0.2.8 (2026-09-02)
 
 - Operator asks whether the target is a test deployment with sandboxed
