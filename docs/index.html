@@ -58,19 +58,19 @@
 </header>
 
 <h2>What it does</h2>
-<p>iFixAi dials <strong>your</strong> agent over its own HTTP endpoint and puts it through up to 102 inspections: does it invent facts, exceed its authority, leak data it shouldn't, change its story under pressure, act when it should escalate. You get a graded report with the exact prompt that caused each failure and the agent's exact reply.</p>
+<p>iFixAi dials <strong>your</strong> agent over its own HTTP endpoint and puts it through up to 129 inspections: does it invent facts, exceed its authority, leak data it shouldn't, change its story under pressure, act when it should escalate. You get a graded report with the exact prompt that caused each failure and the agent's exact reply.</p>
 <p>It reports what your agent got wrong. It does not prescribe fixes.</p>
 
 <h2>Two plans, one connector</h2>
 <ul>
-  <li><strong>Free.</strong> Signing in is enough. You get the 45 open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
-  <li><strong>Paid.</strong> A workspace with credits unlocks all 102 inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Upgrade from the chat with <code>request-credits</code>.</li>
+  <li><strong>Free.</strong> Signing in is enough. You get the 50 open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
+  <li><strong>Paid.</strong> A workspace on a paid package unlocks up to 129 inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
 </ul>
 
 <h2>What you need first</h2>
 <ul>
   <li>An <strong>iFixAi sign-in</strong>. That alone puts you on the free plan.</li>
-  <li>For hosted runs: a <strong>paid workspace with credits</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before spending anything. Free local runs have no such limit: your machine dials the endpoint, localhost included.</li>
+  <li>For hosted runs: a <strong>paid workspace on a package</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before spending anything. Free local runs have no such limit: your machine dials the endpoint, localhost included.</li>
 </ul>
 
 <h2>Connect</h2>
@@ -87,7 +87,7 @@
 <ol>
   <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes a <em>fixture</em>: the spec iFixAi grades against. Free.</li>
   <li><strong>Register the endpoint.</strong> URL plus credential. Test it before spending anything.</li>
-  <li><strong>Quote the run.</strong> See the credit cost and how much of your selection can actually reach your agent.</li>
+  <li><strong>Preview the run.</strong> See what is outside your package, how much of your selection can actually reach your agent, and the audits left this month.</li>
   <li><strong>Run.</strong> Returns immediately with a run id; inspections take minutes to tens of minutes.</li>
   <li><strong>Read the report.</strong> Findings with evidence.</li>
 </ol>
@@ -110,37 +110,36 @@
 <h3>3. Read the result of a finished run</h3>
 <div class="prompt">"Get run run_ab12… and tell me what my agent got wrong, worst first."</div>
 
-<h3>4. Check the balance</h3>
-<div class="prompt">"How many iFixAi credits do I have left, and what did my last three runs cost?"</div>
+<h3>4. Check the package</h3>
+<div class="prompt">"Which iFixAi package am I on, and how many audits do I have left this month?"</div>
 
 <h3>5. Stop a run</h3>
 <div class="prompt">"Cancel the inspection I just started. I picked the wrong suite."</div>
 
 <h2>Tools</h2>
-<p>Six tools answer on the free plan: <code>get-plan</code>, <code>list-inspections</code>, <code>run-inspection</code>, <code>request-credits</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
+<p>Seven tools answer on the free plan: <code>get-plan</code>, <code>list-inspections</code>, <code>run-demo-audit</code>, <code>run-inspection</code>, <code>request-access</code>, <code>list-access-requests</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
 <div class="scroll">
 <table>
-  <thead><tr><th>Tool</th><th>Does</th><th>Costs credits</th></tr></thead>
+  <thead><tr><th>Tool</th><th>Does</th><th>Counts an audit</th></tr></thead>
   <tbody>
-    <tr><td>get-plan</td><td>Which plan this account is on and where runs execute</td><td>no</td></tr>
-    <tr><td>get-wallet</td><td>Credit balance for your workspace</td><td>no</td></tr>
+    <tr><td>get-plan</td><td>Which plan this account is on, its package and this month's audits</td><td>no</td></tr>
     <tr><td>list-inspections</td><td>The inspection roster and what each one checks</td><td>no</td></tr>
     <tr><td>author-fixture</td><td>Turns your agent's description into a fixture</td><td>no</td></tr>
     <tr><td>validate-fixture</td><td>Which inspections a fixture can run, and why the rest can't</td><td>no</td></tr>
     <tr><td>save-fixture</td><td>Stores a fixture against a connection, so a rerun needs no re-authoring</td><td>no</td></tr>
     <tr><td>get-fixture</td><td>The fixture saved for a connection</td><td>no</td></tr>
-    <tr><td>estimate-run-cost</td><td>Credit quote plus coverage warnings</td><td>no</td></tr>
+    <tr><td>preview-run</td><td>What is outside your package, whether the judges fit, audits left, plus coverage warnings</td><td>no</td></tr>
     <tr><td>create-connection</td><td>Registers your agent's endpoint and credential</td><td>no</td></tr>
     <tr><td>test-connection</td><td>Dials your agent once to check it answers</td><td>no</td></tr>
     <tr><td>list-connections</td><td>Endpoints registered in your workspace</td><td>no</td></tr>
-    <tr><td>run-inspection</td><td>Paid: starts a billed hosted run, returns a run id immediately. Free: returns the command to run locally</td><td><strong>paid only</strong></td></tr>
-    <tr><td>get-run</td><td>Status, grade, score, credits quoted and settled</td><td>no</td></tr>
+    <tr><td>run-inspection</td><td>Paid: starts a hosted run, returns a run id immediately. Free: returns the command to run locally</td><td><strong>paid, once it completes</strong></td></tr>
+    <tr><td>get-run</td><td>Status, grade and score</td><td>no</td></tr>
     <tr><td>list-runs</td><td>Your runs, newest first</td><td>no</td></tr>
     <tr><td>get-deliverable</td><td>The frozen report for a finished run</td><td>no</td></tr>
     <tr><td>get-coverage</td><td>Which inspections your recent runs already exercised</td><td>no</td></tr>
-    <tr><td>request-credits</td><td>Raises a credit request, priced from your billing term</td><td>no</td></tr>
-    <tr><td>list-credit-requests</td><td>Your credit requests and where each one stands</td><td>no</td></tr>
-    <tr><td>cancel-run</td><td>Stops a run; you pay only what it already used (in 50-credit blocks, never more than the quote), the rest of the hold returns</td><td>part refund</td></tr>
+    <tr><td>request-access</td><td>Asks for a package, or a bigger one; we assign it by hand</td><td>no</td></tr>
+    <tr><td>list-access-requests</td><td>Your access requests and where each one stands</td><td>no</td></tr>
+    <tr><td>cancel-run</td><td>Stops a run for good; no report, and it does not count as an audit</td><td>no</td></tr>
     <tr><td>search</td><td>Find inspections and your runs by keyword</td><td>no</td></tr>
     <tr><td>fetch</td><td>One search result as a document</td><td>no</td></tr>
   </tbody>
@@ -148,7 +147,7 @@
 </div>
 
 <h2>Choosing what to run</h2>
-<p>Suites range from <code>smoke</code> (3 inspections) to <code>all</code> (102 hosted; the free roster is the 45 open-source inspections). Quote first: <code>estimate-run-cost</code> tells you two things that aren't obvious from the suite name.</p>
+<p>Suites range from <code>smoke</code> (3 inspections) to <code>all</code> (up to 129 hosted, as far as your package reaches; the free roster is the 50 open-source inspections). Preview first: <code>preview-run</code> tells you two things that aren't obvious from the suite name.</p>
 <ul>
   <li><strong>Whether the selection can produce a passing grade.</strong> Four inspections are gating. A gating inspection you don't run is scored as a failure, so any suite short of <code>all</code> returns a capped grade. Smaller suites are useful diagnostics, not verdicts.</li>
   <li><strong>How much of it reaches your agent.</strong> About half the roster inspects a governance surface that a plain chat endpoint doesn't expose. Those read inconclusive against an HTTP target.</li>
@@ -168,9 +167,9 @@
 <table>
   <thead><tr><th>Message</th><th>Means</th></tr></thead>
   <tbody>
-    <tr><td>this needs a paid workspace</td><td>You're on the free plan. The message says what the tool does and what paying adds; <code>request-credits</code> upgrades.</td></tr>
+    <tr><td>this needs a paid workspace</td><td>You're on the free plan. The message says what the tool does and what paying adds; <code>request-access</code> asks for a package.</td></tr>
     <tr><td>workspace has no tenant</td><td>Provisioning didn't finish. Ask us.</td></tr>
-    <tr><td>not enough credits</td><td>Top up before running.</td></tr>
+    <tr><td>no package, outside the package, too many judges, audits used up</td><td>Each names the way out: drop the inspections, pass fewer judges, wait for the 1st, or <code>request-access</code> for the package that has it.</td></tr>
     <tr><td>this run has no fixture</td><td>Author one first, see step 1.</td></tr>
     <tr><td>backend unreachable</td><td>Ours, not yours. Try again shortly.</td></tr>
   </tbody>
