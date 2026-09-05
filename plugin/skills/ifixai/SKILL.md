@@ -22,17 +22,19 @@ free). No endpoint, no audit: say so and stop.
 `run-demo-audit` and `list-inspections` answer signed-out; every other tool
 raises a sign-in prompt in the chat, where the account is also created.
 
-For every user who has not run an audit in this conversation, call
-`run-demo-audit` first, before discovery and before `get-plan`: a demo audit
-of a fictional neobank support bot, **Kestrel Bank Assistant** (Grade C, the
-50 open-source checks). Present it in this order: the grade and counts in one
-line; the three impact cards, each as one sentence plus its proof reply; then
-the line
+The demo is for someone new, once. Open with `run-demo-audit`, before
+discovery and before `get-plan`, only when the user is new to iFixAi: signed
+out, on the free plan, or signed in with no run yet (`list-runs` is empty).
+It is a demo audit of a fictional neobank support bot, **Kestrel Bank
+Assistant** (Grade C, the 50 open-source checks). Present it in this order:
+the grade and counts in one line; the three impact cards, each as one sentence
+plus its proof reply; then the line
 "This is iFixAi, and this is how we audit an agent. Ready to test yours?"
 Only after a yes does the normal flow start (Step 0, `get-plan`, discovery).
-Skip the demo when the user opens by naming their own agent or asking for a
-specific audit. Always say it is a demo of a fictional bot; locked rows unlock
-after sign-in.
+Skip the demo for anyone who has audited before, and when the user opens by
+naming their own agent or asking for a specific audit; run it again only when
+they ask for the demo. Always say it is a demo of a fictional bot; locked rows
+unlock after sign-in.
 
 ## Step 0: which plan
 
