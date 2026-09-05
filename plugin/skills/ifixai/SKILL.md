@@ -84,6 +84,21 @@ Keys never reach us.
   offer `request-access` with its id: the team gets in touch and walks them
   through a demo. Once, not every turn.
 
+## 0b. If the answer is no: make a test copy
+
+Start no audit. Set the copy up for them, running the local commands yourself
+where the repo lets you: (a) `ifixai sandbox --fixture <fixture>` starts fake
+tools, prints their address; (b) run the agent on a test branch, tools' base
+URL set to that address (the env var if the code names it, else "the setting
+that holds the tools' base URL"); (c) expose it with
+`cloudflared tunnel --url http://localhost:<port>` plus an auth header, as our
+servers refuse localhost; then `create-connection` with that URL,
+`test-connection`, quote. A copy already deployed skips (a) and (c): point its
+tools at the hosted `rest_url` that `create-connection` returns; `last_call_at`
+confirms it. Tools calling providers directly, no base URL: use the providers'
+test modes (Stripe test keys, a scratch database); the audit runs but the
+report has no "what the agent did" section; say so. Never assume yes.
+
 ## 1. Discover: read before asking
 
 Sweep the whole repo for an endpoint and any agent definition:
@@ -229,6 +244,12 @@ different problems. A refusal naming the package's agent cap means the
 package includes fewer connected agents: offer `request-access` for the next
 one, or remove an old connection.
 
+The answer's `sandbox` block (when present) is a hosted fake-tool backend we
+run for this connection: point the test copy's tools at `rest_url`; one
+variable; then check `last_call_at` on `list-connections` before spending
+credits. Null means the agent has not reached it. Tool arguments the agent
+sends reach iFixAi.
+
 ## 7. Preview, then wait for yes
 
 `preview-run` before starting; it prices nothing. Read `coverage.warning`
@@ -264,6 +285,12 @@ with its proof. `format: "json"` only when the user wants the whole report,
 `format: "html"` for a file to send on. **Findings, not fixes.** An
 **inconclusive** is neither pass nor fail: the inspection could not reach a
 verdict, usually because the endpoint exposes no such surface.
+
+`tool_calls` (when present) is what the agent did at the sandbox during the
+run: name tools and counts ("it called `issue_refund` three times, two
+destructive, one undeclared"). A `total` of 0 means nothing reached the
+sandbox: the agent may not be wired to it, and `last_call_at` is the quick
+check. No key at all means the run recorded none; never read that as zero.
 
 ## Honest constraints
 
