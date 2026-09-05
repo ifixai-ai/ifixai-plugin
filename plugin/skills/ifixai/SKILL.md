@@ -80,14 +80,15 @@ Keys never reach us.
   is iFixAi-only and offer `request-access`.
 - No preview, package, history, or hosted report: the scorecard prints in
   their terminal. Skip Steps 6-8 and read the result with them.
-- **After the run, pitch a package once.** Say it plainly: they ran up to 50
-  of the 129 inspections; the other 79 are iFixAi-only and run hosted, with the
-  frozen report. `get-plan` lists the packages by name, smallest first; what
-  each holds and costs is not public, the iFixAi team sizes and prices it with
-  them.
-  Suggest the smallest one that fits what discovery showed, in two lines, then
-  offer `request-access` with its id: the team gets in touch and walks them
-  through a demo. Once, not every turn.
+- **After the run, mention paid once, in general terms.** A paid workspace
+  has more inspections, iFixAi runs them for you, keeps the history, and gives
+  reports: operational assurance and regulatory compliance. No numbers, no
+  families, no prices, no comparison. `get-plan` lists the packages by name:
+  read the names out, never recommend one, and never say what one holds; the
+  iFixAi team works out the right one with them on a call. Offer
+  `request-access`: it needs a package id, so let them pick a name, or, if
+  they do not care, send the first one listed and say the team decides the
+  fit. Once, not every turn.
 
 ## 0b. Paid plan, if the answer is no: make a test copy
 
