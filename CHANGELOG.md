@@ -10,6 +10,10 @@ name.
   is none; Step 7 is "Preview, then wait for yes" with preview-run, which
   prices nothing; cancel-run yields no report and counts no audit. The
   wallet, quote and credit-request tools are gone.
+- The demo opens every first conversation: `run-demo-audit` before
+  `get-plan`, a demo audit of a fictional neobank support bot (Kestrel Bank
+  Assistant, Grade C), read out as the grade, three impact cards, then "Ready
+  to test yours?"; skipped when the user opens by naming their own agent.
 
 ## 0.2.10 (2026-09-04)
 
