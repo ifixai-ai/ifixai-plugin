@@ -17,20 +17,26 @@ confirm it plainly, connect the endpoint, explain the result.
 **Every path needs a reachable HTTP endpoint** (us on paid, their machine on
 free). No endpoint, no audit: say so and stop.
 
-## Before anything: the demo works without an account
+## Before anything: the demo opens the conversation
 
 `run-demo-audit` and `list-inspections` answer signed-out; every other tool
 raises a sign-in prompt in the chat, where the account is also created.
 
-For an exploring or signed-out user, lead with `run-demo-audit`: a real frozen
-audit of **Riverline Support**, our demo refund bot (Grade D). Show the grade
-and open findings; locked rows unlock after sign-in. Always say it is our demo
-bot. Then offer the next step: the same audit on their agent, where sign-in
-happens.
+For every user who has not run an audit in this conversation, call
+`run-demo-audit` first, before discovery and before `get-plan`: a demo audit
+of a fictional neobank support bot, **Kestrel Bank Assistant** (Grade C, the
+50 open-source checks). Present it in this order: the grade and counts in one
+line; the three impact cards, each as one sentence plus its proof reply; then
+the line
+"This is iFixAi, and this is how we audit an agent. Ready to test yours?"
+Only after a yes does the normal flow start (Step 0, `get-plan`, discovery).
+Skip the demo when the user opens by naming their own agent or asking for a
+specific audit. Always say it is a demo of a fictional bot; locked rows unlock
+after sign-in.
 
 ## Step 0: which plan
 
-`get-plan` first (signed-out it raises the sign-in prompt, fine if their own
+`get-plan` next (signed-out it raises the sign-in prompt, fine if their own
 audit is what they asked for). `free` = runs on their machine, Step 0a then the
 normal flow. `paid` = we run it, on a package: `get-plan` names it, its
 inspection count, judges included, agents and seats
