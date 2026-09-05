@@ -55,11 +55,13 @@ free plan: switch path. "Paused" or "being set up" is neither: relay and stop.
 `run-inspection` returns a **recipe**: a shell `command` plus `steps`. Before
 calling it, ask the user in words: is this a test target with sandboxed
 backends and no real data? The probes try to make the agent misuse its tools.
-Pass their answer as `targetIsSandboxed` (required); never assume yes, and a no
-returns safe-setup steps and no command. Offer both ways, their choice: they
-paste it in their terminal, or you run it in your shell (ask first; stream the
-scorecard as it prints). It needs one judge key of their own: ask which they
-have (OpenRouter, OpenAI, Anthropic, Gemini) and pass it as `judgeProvider`.
+Pass their answer as `targetIsSandboxed` (required); never assume yes. On a
+no, say only this: run a test copy of the agent whose tools cannot reach real
+data or money (a sandbox), then come back. No command, no walkthrough.
+Offer both ways, their choice: they paste it in their terminal, or you run it
+in your shell (ask first; stream the scorecard as it prints). It needs one
+judge key of their own: ask which they have (OpenRouter, OpenAI, Anthropic,
+Gemini) and pass it as `judgeProvider`.
 Keys never reach us.
 
 - **Recommend the scope first**: at least 15 inspections you pick from
@@ -83,6 +85,22 @@ Keys never reach us.
   Suggest the smallest one that fits what discovery showed, in two lines, then
   offer `request-access` with its id: the team gets in touch and walks them
   through a demo. Once, not every turn.
+
+## 0b. Paid plan, if the answer is no: make a test copy
+
+Start no audit. Set the copy up for them, running the local commands yourself
+where the repo lets you: (a) point the agent's tools at a fake backend or a
+staging copy with synthetic data; lead with ours, the hosted sandbox
+`rest_url` that `create-connection` returns (Step 6), one variable (the env
+var if the code names it, else "the setting that holds the tools' base URL");
+(b) run the agent on a test branch with that setting; (c) a copy running
+locally is exposed with `cloudflared tunnel --url http://localhost:<port>`
+plus an auth header, as our servers refuse localhost. `create-connection`
+with the copy's URL comes first, since it mints the `rest_url`; then
+`test-connection`, preview, and `last_call_at` confirms the copy reached the
+sandbox. Tools calling providers directly, no base URL: use the providers'
+test modes (Stripe test keys, a scratch database); the audit runs but the
+report has no "what the agent did" section; say so. Never assume yes.
 
 ## 1. Discover: read before asking
 
@@ -229,6 +247,12 @@ different problems. A refusal naming the package's agent cap means the
 package includes fewer connected agents: offer `request-access` for the next
 one, or remove an old connection.
 
+The answer's `sandbox` block (when present) is a hosted fake-tool backend we
+run for this connection: point the test copy's tools at `rest_url`; one
+variable; then check `last_call_at` on `list-connections` before starting a
+run. Null means the agent has not reached it. Tool arguments the agent
+sends reach iFixAi.
+
 ## 7. Preview, then wait for yes
 
 `preview-run` before starting; it prices nothing. Read `coverage.warning`
@@ -244,7 +268,7 @@ audits, so it needs an explicit yes.
 
 `get-coverage` first when re-auditing; lead with what failed last time. Ask
 the same test-target question as in Step 0a and pass `targetIsSandboxed`; a no
-is refused before anything starts.
+is refused before anything starts: go to Step 0b.
 `run-inspection` returns a run id; the audit continues server-side, minutes to
 tens of minutes. Poll `get-run` without busy-looping. A refusal names the way
 out: no package, a selection outside it, too many judges, or the month's
@@ -264,6 +288,13 @@ with its proof. `format: "json"` only when the user wants the whole report,
 `format: "html"` for a file to send on. **Findings, not fixes.** An
 **inconclusive** is neither pass nor fail: the inspection could not reach a
 verdict, usually because the endpoint exposes no such surface.
+
+`tool_calls` (when present) is what the agent did at the sandbox during the
+run: name tools and counts ("it called `issue_refund` three times, a
+destructive tool; 2 of 12 calls went to tools the fixture never declared").
+A `total` of 0 means nothing reached the sandbox: the agent may not be wired
+to it, and `last_call_at` is the quick check. No key at all means the run
+recorded none; never read that as zero.
 
 ## Honest constraints
 

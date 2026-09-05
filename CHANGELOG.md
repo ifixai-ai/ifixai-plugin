@@ -3,6 +3,17 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.3.1 (2026-09-05)
+
+- Hosted sandbox: the operator points the test copy's tools at the
+  connection's `rest_url`, checks `last_call_at` before starting a run, and
+  reads `tool_calls` (what the agent did) off the report.
+- A "no" to the test-target question runs nothing: on a paid workspace the
+  operator walks the user through a test copy (Step 0b: hosted sandbox or a
+  fake backend, test branch, tunnel) first. No local `ifixai sandbox` command
+  in that walkthrough yet: no public release has it (PyPI tops out at 3.4.1);
+  it returns when the free recipe's pin moves to 3.5.0.
+
 ## 0.3.0 (2026-09-05)
 
 - Packages, not credits. Step 0 reads the package off get-plan (audits used
