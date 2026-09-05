@@ -3,6 +3,14 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.3.0 (2026-09-05)
+
+- Packages, not credits. Step 0 reads the package off get-plan (audits used
+  of allowed this month, judges, agents) and offers request-access when there
+  is none; Step 7 is "Preview, then wait for yes" with preview-run, which
+  prices nothing; cancel-run yields no report and counts no audit. The
+  wallet, quote and credit-request tools are gone.
+
 ## 0.2.10 (2026-09-04)
 
 - Step 4 authors from the repo in two calls: select-repo-files with the file

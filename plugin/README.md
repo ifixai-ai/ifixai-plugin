@@ -11,7 +11,7 @@ Findings are reported across the five operational-misalignment modes:
 fabrication, manipulation, deception, unpredictability, opacity.
 
 This plugin contains no engine. It connects to iFixAi's hosted service; the
-inspections, probes, judges and scoring all run server-side, billed in credits.
+inspections, probes, judges and scoring all run server-side, on a package.
 
 ## Install
 
@@ -26,26 +26,27 @@ password, and your agent's credential is stored server-side and never returned.
 ## Requirements
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
-  straight away: the 45 open-source inspections, run on your own machine with
-  your own LLM key. A paid workspace adds the other 57 and runs them for you.
+  straight away: the 50 open-source inspections, run on your own machine with
+  your own LLM key. A paid workspace on a package
+  adds the iFixAi-only inspections, up to 129 in total, and runs them for you.
 - An agent speaking OpenAI-shaped chat completions. For hosted (paid) runs it
   must be at a public HTTPS endpoint: private and loopback addresses are refused
   when dialled. Free runs dial from your own machine, so localhost is fine.
 
 ## What it can do
 
-- **Wallet and credits**: check the balance, request more, see pending requests.
+- **Package**: see which one you are on and this month's audits, ask for one
+  or for a bigger one, see where the request stands.
 - **Inspections**: browse the roster and what each one checks.
 - **Fixtures**: turn a description of your agent into one, validate it, save it
   against a connection and read it back, so a rerun needs no re-authoring.
 - **Connections**: register an agent endpoint, dial it once to test, list them.
-- **Runs**: quote the cost, start, cancel, poll status, read the frozen report.
+- **Runs**: preview, start, cancel, poll status, read the frozen report.
 - **Coverage**: which inspections your recent runs actually exercised.
 
-Only `run-inspection` spends credits. Cancelling charges just the model spend the
-run had already used, in 50-credit blocks and never more than the quote, and returns
-the rest of the hold.
-A credit request is reviewed manually with no automatic alert behind it, so email
+Only a completed `run-inspection` counts as one of the package's monthly audits.
+Cancelling yields no report and counts nothing.
+An access request is assigned by hand after we talk to you, so email
 support@ifixai.ai if it is urgent.
 
 ## How it stays independent

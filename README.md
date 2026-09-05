@@ -27,13 +27,13 @@ judges and scoring live in iFixAi.
 
 ## Two tiers
 
-**Free.** Sign in and the 45 open-source inspections run on your own machine,
+**Free.** Sign in and the 50 open-source inspections run on your own machine,
 with your own LLM key, against your own agent. Nothing is billed, nothing is
 saved with us, and your key never reaches us.
 
-**Paid.** A workspace adds the 57 iFixAi-only inspections, runs we execute for
-you, saved history and the report. Ask for one with `request-credits`; a person
-approves it.
+**Paid.** A workspace on a paid package adds the
+iFixAi-only inspections, up to 129 in total, runs we execute for you, saved
+history and the report. Ask for one with `request-access`; a person assigns it.
 
 ## Getting access
 
