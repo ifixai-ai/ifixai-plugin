@@ -10,7 +10,9 @@ name.
   reads `tool_calls` (what the agent did) off the report.
 - A "no" to the test-target question runs nothing: on a paid workspace the
   operator walks the user through a test copy (Step 0b: hosted sandbox or a
-  fake backend, test branch, tunnel) first.
+  fake backend, test branch, tunnel) first. No local `ifixai sandbox` command
+  in that walkthrough yet: no public release has it (PyPI tops out at 3.4.1);
+  it returns when the free recipe's pin moves to 3.5.0.
 
 ## 0.3.0 (2026-09-05)
 

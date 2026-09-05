@@ -89,15 +89,16 @@ Keys never reach us.
 ## 0b. Paid plan, if the answer is no: make a test copy
 
 Start no audit. Set the copy up for them, running the local commands yourself
-where the repo lets you: (a) `ifixai sandbox --fixture <fixture>` starts fake
-tools, prints their address; (b) run the agent on a test branch, tools' base
-URL set to that address (the env var if the code names it, else "the setting
-that holds the tools' base URL"); (c) expose it with
-`cloudflared tunnel --url http://localhost:<port>` plus an auth header, as our
-servers refuse localhost; then `create-connection` with that URL,
-`test-connection`, quote. A copy already deployed skips (a) and (c): point its
-tools at the hosted `rest_url` that `create-connection` returns; `last_call_at`
-confirms it. Tools calling providers directly, no base URL: use the providers'
+where the repo lets you: (a) point the agent's tools at a fake backend or a
+staging copy with synthetic data; lead with ours, the hosted sandbox
+`rest_url` that `create-connection` returns (Step 6), one variable (the env
+var if the code names it, else "the setting that holds the tools' base URL");
+(b) run the agent on a test branch with that setting; (c) a copy running
+locally is exposed with `cloudflared tunnel --url http://localhost:<port>`
+plus an auth header, as our servers refuse localhost. `create-connection`
+with the copy's URL comes first, since it mints the `rest_url`; then
+`test-connection`, preview, and `last_call_at` confirms the copy reached the
+sandbox. Tools calling providers directly, no base URL: use the providers'
 test modes (Stripe test keys, a scratch database); the audit runs but the
 report has no "what the agent did" section; say so. Never assume yes.
 
@@ -248,8 +249,8 @@ one, or remove an old connection.
 
 The answer's `sandbox` block (when present) is a hosted fake-tool backend we
 run for this connection: point the test copy's tools at `rest_url`; one
-variable; then check `last_call_at` on `list-connections` before spending
-credits. Null means the agent has not reached it. Tool arguments the agent
+variable; then check `last_call_at` on `list-connections` before starting a
+run. Null means the agent has not reached it. Tool arguments the agent
 sends reach iFixAi.
 
 ## 7. Preview, then wait for yes
@@ -267,7 +268,7 @@ audits, so it needs an explicit yes.
 
 `get-coverage` first when re-auditing; lead with what failed last time. Ask
 the same test-target question as in Step 0a and pass `targetIsSandboxed`; a no
-is refused before anything starts.
+is refused before anything starts: go to Step 0b.
 `run-inspection` returns a run id; the audit continues server-side, minutes to
 tens of minutes. Poll `get-run` without busy-looping. A refusal names the way
 out: no package, a selection outside it, too many judges, or the month's
@@ -289,10 +290,11 @@ with its proof. `format: "json"` only when the user wants the whole report,
 verdict, usually because the endpoint exposes no such surface.
 
 `tool_calls` (when present) is what the agent did at the sandbox during the
-run: name tools and counts ("it called `issue_refund` three times, two
-destructive, one undeclared"). A `total` of 0 means nothing reached the
-sandbox: the agent may not be wired to it, and `last_call_at` is the quick
-check. No key at all means the run recorded none; never read that as zero.
+run: name tools and counts ("it called `issue_refund` three times, a
+destructive tool; 2 of 12 calls went to tools the fixture never declared").
+A `total` of 0 means nothing reached the sandbox: the agent may not be wired
+to it, and `last_call_at` is the quick check. No key at all means the run
+recorded none; never read that as zero.
 
 ## Honest constraints
 
