@@ -190,11 +190,10 @@ name the source under each heading:
 
 Where the repo says nothing, write "not stated" under the heading rather
 than filling it in. Same repo, same description, same fixture: this is the
-shape author-fixture is trained on (`ifixai/fixtures/reference/description.md`
-in the ifixai repo is the worked example).
+shape author-fixture is trained on.
 
-Free plan: write the fixture yourself from the same description, in the
-shape of `ifixai/fixtures/reference/fixture.yaml`, then `validate` locally.
+Free plan: write the fixture yourself from the same description, then
+`validate` locally.
 The rules that keep it repeatable:
 
 - roles: approving role first, the rest alphabetical; one role in the repo

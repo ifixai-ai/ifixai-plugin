@@ -3,6 +3,15 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.3.2 (2026-09-07)
+
+- The judges are not the user's to pick: the package's panel grades, the
+  preview says how many, and a run that fails on iFixAi's side says so in one
+  sentence and counts no audit.
+- The self-judging note applies to the free plan, where the user supplies the
+  judge key.
+- Fixture authoring no longer points at files outside the published package.
+
 ## 0.3.1 (2026-09-05)
 
 - Hosted sandbox: the operator points the test copy's tools at the
