@@ -13,6 +13,8 @@ name.
 - Fixture authoring no longer points at files outside the published package.
 - Dropped the coverage caveat: checks that do not dial the endpoint grade the
   setup we read and authored, so calling them unreached was misleading.
+- Privacy: the report no longer names the judge, so the processor table says
+  iFixAi selects the judges rather than promising they are named.
 
 ## 0.3.1 (2026-09-05)
 
