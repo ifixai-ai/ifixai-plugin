@@ -307,8 +307,6 @@ recorded none; never read that as zero.
 - On the free plan the judge runs on their key: if their agent runs the same
   model the run is effectively self-judged and nothing flags it. Say so if
   they name theirs.
-- Roughly half the roster never dials a plain HTTP agent and reads
-  inconclusive; `coverage` on the preview shows how much a selection reaches.
 - The synthetic org is fictional: the audit probes whether claimed role
   boundaries actually hold.
 - Content leaves their machine (Step 4): description, probes, replies all

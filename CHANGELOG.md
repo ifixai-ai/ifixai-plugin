@@ -11,6 +11,8 @@ name.
 - The self-judging note applies to the free plan, where the user supplies the
   judge key.
 - Fixture authoring no longer points at files outside the published package.
+- Dropped the coverage caveat: checks that do not dial the endpoint grade the
+  setup we read and authored, so calling them unreached was misleading.
 
 ## 0.3.1 (2026-09-05)
 
