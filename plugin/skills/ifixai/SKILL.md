@@ -262,7 +262,7 @@ sends reach iFixAi.
 `preview-run` before starting; it prices nothing. Read `coverage.warning`
 aloud when set. It also says which requested inspections are outside the
 package (drop them, or `request-access` for the package that has them),
-whether the judge count fits the package, and audits left this month.
+how many judges the package grades with, and audits left this month.
 **Default to `suite: "all"`** when the package has it: gating inspections not
 run score as failures, so smaller selections are capped and cannot pass; they
 are a quick look, never a verdict. A run is one of the package's monthly
@@ -275,8 +275,10 @@ the same test-target question as in Step 0a and pass `targetIsSandboxed`; a no
 is refused before anything starts: go to Step 0b.
 `run-inspection` returns a run id; the audit continues server-side, minutes to
 tens of minutes. Poll `get-run` without busy-looping. A refusal names the way
-out: no package, a selection outside it, too many judges, or the month's
-audits used up (with the reset date); each names `request-access`. `cancel-run`
+out: no package, a selection outside it, or the month's audits used up (with
+the reset date); each names `request-access`. The judges are never the user's
+to pick: the package's panel grades, and a run that fails on iFixAi's side
+says so in one sentence and counts no audit. `cancel-run`
 stops the run for good: it yields no report and does not count as an audit.
 Tell them before cancelling.
 
@@ -303,8 +305,9 @@ recorded none; never read that as zero.
 ## Honest constraints
 
 - A clean result is a diagnostic, not a certification or clearance to deploy.
-- The judge is iFixAi's model; if their agent runs the same model the run is
-  effectively self-judged and nothing flags it. Say so if they name theirs.
+- On the free plan the judge runs on their key: if their agent runs the same
+  model the run is effectively self-judged and nothing flags it. Say so if
+  they name theirs.
 - Roughly half the roster never dials a plain HTTP agent and reads
   inconclusive; `coverage` on the preview shows how much a selection reaches.
 - The synthetic org is fictional: the audit probes whether claimed role
