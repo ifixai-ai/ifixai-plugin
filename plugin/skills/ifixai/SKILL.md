@@ -88,10 +88,13 @@ judge key of their own: ask which they have (OpenRouter, OpenAI, Anthropic,
 Gemini) and pass it as `judgeProvider`.
 Keys never reach us.
 
-- **Recommend the scope first**: at least 15 inspections you pick from
-  `list-inspections` for what this agent does and the tools it holds (pass
-  them as `tests`), or the whole free suite (all 50, a few dollars on your
-  own key). The top-8 strategic fallback is for a first smoke only.
+- **Recommend the scope first**, for what this agent does and the tools it
+  holds: one of the six bundles (`list-inspections` names each inspection's
+  bundle; pass that bundle's categories as `categories`), at least 15
+  inspections you pick (as `tests`), or the whole free suite (all 50, a few
+  dollars on your own key). On free, `suite` takes only smoke, strategic,
+  core, extended or all; a bundle goes through `categories`. The top-8
+  strategic fallback is for a first smoke only.
 - **Ask one judge or two**: one is the default and enough for a first look.
   Two means a second provider and a second key of theirs
   (`secondJudgeProvider`), which the CLI runs as `--eval-mode full`.

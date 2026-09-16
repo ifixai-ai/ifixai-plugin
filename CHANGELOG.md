@@ -5,6 +5,8 @@ name.
 
 ## 0.4.0 (2026-09-15)
 
+- Free path: the scope is offered as one of the six bundles, a pick of 15 or
+  more, or all 50. A bundle runs as its categories.
 - No em-dashes in the guide. Colon or full stop, as the house rule has always
   said; a test now fails on one rather than leaving it to review.
 
