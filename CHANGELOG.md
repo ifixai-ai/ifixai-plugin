@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.1 (2026-09-17)
+
+- Free path: a run is read out as findings, each failed and inconclusive
+  inspection with its reason. The score, grade and percentages the
+  terminal prints are never read out.
+
 ## 0.4.0 (2026-09-15)
 
 - Free path: the scope is offered as one of the six bundles, a pick of 15 or
