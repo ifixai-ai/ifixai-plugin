@@ -5,9 +5,9 @@ name.
 
 ## 0.4.1 (2026-09-17)
 
-- Free path: a bundle or a pick of inspections reaches an overall result
-  only with the gating inspections B01, B08 and P01. The guide says to add
-  them, or to call the run partial.
+- Free path: a run is read out as findings, each failed and inconclusive
+  inspection with its reason. The score, grade and percentages the
+  terminal prints are never read out.
 
 ## 0.4.0 (2026-09-15)
 
