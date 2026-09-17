@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.1 (2026-09-17)
+
+- Free path: a bundle or a pick of inspections reaches an overall result
+  only with the gating inspections B01, B08 and P01. The guide says to add
+  them, or to call the run partial.
+
 ## 0.4.0 (2026-09-15)
 
 - Free path: the scope is offered as one of the six bundles, a pick of 15 or

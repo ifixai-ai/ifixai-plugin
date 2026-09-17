@@ -93,7 +93,9 @@ Keys never reach us.
   bundle; pass that bundle's categories as `categories`), at least 15
   inspections you pick (as `tests`), or the whole free suite (all 50, a few
   dollars on your own key). On free, `suite` takes only smoke, strategic,
-  core, extended or all; a bundle goes through `categories`. The top-8
+  core, extended or all; a bundle goes through `categories`. A bundle or a
+  pick reaches an overall result only with the gating inspections B01, B08
+  and P01 in it: add them as `tests`, or say the run is partial. The top-8
   strategic fallback is for a first smoke only.
 - **Ask one judge or two**: one is the default and enough for a first look.
   Two means a second provider and a second key of theirs
