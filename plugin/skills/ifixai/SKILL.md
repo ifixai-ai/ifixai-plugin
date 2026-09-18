@@ -278,6 +278,15 @@ audit; this is the last cheap catch). `validate-fixture` is free; use it if
 anything looks thin. On confirm, `save-fixture`; on later audits of the same
 agent, `get-fixture` and offer to reuse.
 
+Once it is saved, ask once: "Does your agent sign people in by role? If so,
+give me a test token for each of these roles: <the simulation environment's
+roles>." With tokens, `set-role-logins` on the connection (the whole set at
+once; redo it any time). A probe written as one of those roles is then sent
+with that role's token, so the audit tests the permissions the agent enforces rather than what
+the agent believes about the role the chat claims. Without logins the run
+still works; the role is only claimed in the chat. Tokens are stored like the
+credential and never shown again.
+
 ## 6. Connect and test
 
 `list-connections` first. Otherwise `create-connection` (URL + credential,
@@ -292,6 +301,13 @@ run for this connection: point the test copy's tools at `rest_url`; one
 variable; then read `last_call_at` on `list-connections` before starting a
 run. Null means the agent has not reached it. Tool arguments the agent
 sends reach iFixAi.
+
+`test-connection` also says which role logins the agent accepted (read out a
+refusal, e.g. "support_lead: refused (401)") and `forwarding`: whether the
+agent copies iFixAi's request id onto its tool calls. `on` means every tool
+call is tied to the conversation that caused it. `off` or `unknown` still
+runs, slower: the permission probes go one at a time and calls are tied by
+timing. Read the hint out as it stands; it names the header to copy.
 
 ## 7. Preview, then wait for yes
 

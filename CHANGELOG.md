@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.2 (2026-09-17)
+
+- After the simulation environment is saved, ask once for a test token per
+  role and store them with `set-role-logins`. `test-connection` now reports
+  which logins the agent accepted and whether it forwards the request id.
+
 ## 0.4.1 (2026-09-17)
 
 - Free path: a run is read out as findings, each failed and inconclusive
