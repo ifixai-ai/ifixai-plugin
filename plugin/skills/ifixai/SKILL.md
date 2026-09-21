@@ -1,402 +1,121 @@
 ---
 name: ifixai
-description: Run an independent iFixAi audit of the user's deployed agent, free on their own machine or hosted on a paid workspace, testing whether it does the job it is supposed to do given their business rules and org structure, and whether it can be pushed outside them. You are the operator who finds the agent in their repo, confirms it, builds the simulation environment, connects its HTTP endpoint, previews the run, runs the audit and explains what it found. Use when the user asks to audit, inspect, red-team or stress-test an agent they have deployed, to read their iFixAi package, or to read a past run.
+description: Audit the user's deployed AI agent with iFixAi, free on their own machine or hosted on a paid workspace. You find the agent in their repo, build its simulation environment, connect its endpoint, run the audit and explain what it found. Use when the user asks to audit, inspect, red-team or stress-test an agent, read their iFixAi package, or read a past run.
 ---
 
 # iFixAi: audit your deployed agent
 
-## What this does
+Three stages: **Connect** the agent, build its **Simulation environment** (the fixture file, and the `*-fixture` tools that write it), run the **Audit**. You are the operator, not the thing being tested.
 
-Red-teams and stress tests the agent the user actually ships: can it be
-manipulated outside its boundaries, and does it keep doing its job while that
-happens. Findings carry the probe and the agent's own reply.
+Every audit needs a reachable HTTP endpoint. No endpoint, no audit: say so and stop.
 
-Three stages, and the whole flow below is those three: **Connect** the agent,
-build its **Simulation environment** (the fixture file, and the `*-fixture`
-tools that write it), run the **Audit**.
+The demo, the package rules, the sandbox question and "findings, never fixes" are in the server instructions. They are not repeated here.
 
-**You are the operator, not the thing being tested.** You read their setup,
-confirm it plainly, connect the endpoint, explain the result.
+## 0. Plan
 
-**Every path needs a reachable HTTP endpoint** (us on paid, their machine on
-free). No endpoint, no audit: say so and stop.
+`get-plan` (after the demo, when the demo applies).
+- `free`: runs on the user's machine. Follow **Free plan** at the end.
+- `paid`: read back the package and the audits left this month with the reset date. No package yet: it cannot run, offer `request-access`.
+- "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.
 
-## Before anything: the demo opens the conversation
-
-Every tool needs a sign-in. The first call raises a sign-in prompt in the
-chat, where the free account is also created; sign-in is free and takes a
-minute, and nothing else is asked for.
-
-The demo is for someone new, once. Open with `run-demo-audit`, before
-discovery and before `get-plan`, only when the user is new to iFixAi: on the
-free plan, or with no run yet (`list-runs` is empty).
-It is a demo audit of a fictional neobank support bot, **Kestrel Bank
-Assistant**, over the 50 open-source inspections. Present it in this order: the
-counts in one line, exactly as "Kestrel Bank Assistant, a fictional neobank
-support bot, demo audit: 36 of 50 inspections passed, 14 failed."; the three impact
-cards, each as one sentence plus its proof reply; then the line
-"This is iFixAi, and this is how we audit an agent. Ready to test yours?"
-Only after a yes does the normal flow start (Step 0, `get-plan`, discovery).
-Skip the demo for anyone who has audited before, and when the user opens by
-naming their own agent or asking for a specific audit; run it again only when
-they ask for the demo. Always say it is a demo of a fictional bot. If they ask
-what paid gets them, read the packages out of `get-plan` (Step 0, "What each
-package holds").
-
-## Step 0: which plan
-
-`get-plan` next. `free` = runs on their machine, Step 0a then the
-normal flow. `paid` = we run it, on a package: `get-plan` names it, its
-inspection count, seats used of allowed, audits used of allowed this month
-with the reset date, and `per_agent`, which says how many of the month's
-audits each connected agent has left.
-Read that back before anything else. A paid workspace with no package yet
-cannot run: say so and offer `request-access`, which names the package they
-want (we assign it by hand after talking to them; for urgent,
-support@ifixai.ai). A bigger package is the same call; downgrades go through
-support@ifixai.ai.
-
-**Do not match refusal wording; it changes.** "Needs a paid workspace" means
-free plan: switch path. "Paused" or "being set up" is neither: relay and stop.
-
-### What each package holds
-
-`get-plan` lists every package with what it gets them: the tagline, a
-`summary` sentence, and, from Growth up, the badge, meaning they may say their
-agent has been audited by iFixAi. Read the `summary` out as it stands, in the
-order the list comes in. The same rows ride on `list-inspections`, so either
-tool reads them out.
-
-Read the packages out whenever they ask what paid gets them, on any package
-refusal, and once after the demo or a free run. Never a price, never the
-judges, never how many agents a package covers, and never a recommendation:
-they pick, and the iFixAi team works out the fit with them on a call. Then
-`request-access` with the id they name; if they do not care, send the first one
-listed and say the team decides.
-
-## Step 0a: the free path
-
-`run-inspection` returns a **recipe**: a shell `command` plus `steps`. Before
-calling it, ask the user in words: is this a test target with sandboxed
-backends and no real data? The probes try to make the agent misuse its tools.
-Pass their answer as `targetIsSandboxed` (required); never assume yes. On a
-no, say only this: run a test copy of the agent whose tools cannot reach real
-data or money (a sandbox), then come back. No command, no walkthrough.
-Offer both ways, their choice: they paste it in their terminal, or you run it
-in your shell (ask first; read the results out as they print). It needs one
-judge key of their own: ask which they have (OpenRouter, OpenAI, Anthropic,
-Gemini) and pass it as `judgeProvider`.
-Keys never reach us.
-
-- **Recommend the scope first**, for what this agent does and the tools it
-  holds: one of the six bundles (`list-inspections` names each inspection's
-  bundle; pass that bundle's categories as `categories`), at least 15
-  inspections you pick (as `tests`), or the whole free suite (all 50, a few
-  dollars on your own key). On free, `suite` takes only smoke, strategic,
-  core, extended or all; a bundle goes through `categories`. The top-8
-  strategic fallback is for a first smoke only.
-- **Ask one judge or two**: one is the default and enough for a first look.
-  Two means a second provider and a second key of theirs
-  (`secondJudgeProvider`), which the CLI runs as `--eval-mode full`.
-- **`author-fixture` is paid.** Write the simulation environment yourself from
-  discovery and validate it with `uvx 'ifixai[openrouter]@3.4.1' validate <file>`.
-- **Pass `fixturePath` and `endpoint`**; there is no saved connection here.
-- A named inspection not on `list-inspections` refuses the whole call: say it
-  is iFixAi-only and offer `request-access`.
-- No preview, package, history, or hosted report: the results print in
-  their terminal. Skip Steps 6-8 and read them out together as findings:
-  each failed and inconclusive inspection with its reason, from the report
-  in `./ifixai-results/`. The terminal also prints the engine's own score,
-  grade and percentages; never read those out.
-- **After the run, mention paid once.** A paid workspace has more
-  inspections, iFixAi runs them for you, keeps the history, and gives reports:
-  operational assurance and regulatory compliance. Then read the packages out
-  as Step 0 describes, tagline and what each holds, badge from Growth up, and
-  offer `request-access`. No prices, no judges, no recommendation. Once, not
-  every turn.
-
-## 0b. Paid plan, if the answer is no: make a test copy
-
-Start no audit. Set the copy up for them, running the local commands yourself
-where the repo lets you: (a) point the agent's tools at a fake backend or a
-staging copy with synthetic data; lead with ours, the hosted sandbox
-`rest_url` that `create-connection` returns (Step 6), one variable (the env
-var if the code names it, else "the setting that holds the tools' base URL");
-(b) run the agent on a test branch with that setting; (c) a copy running
-locally is exposed with `cloudflared tunnel --url http://localhost:<port>`
-plus an auth header, as our servers refuse localhost. `create-connection`
-with the copy's URL comes first, since it mints the `rest_url`; then
-`test-connection`, preview, and `last_call_at` confirms the copy reached the
-sandbox. Tools calling providers directly, no base URL: use the providers'
-test modes (Stripe test keys, a scratch database); the audit runs but the
-report has no "what the agent did" section; say so. Never assume yes.
-
-## 1. Discover: read before asking
-
-Sweep the whole repo for an endpoint and any agent definition:
+## 1. Find the agent
 
 ```bash
 grep -rniE "IFIXAI_HTTP_ENDPOINT|OPENAI_BASE_URL|ANTHROPIC_BASE_URL|AGENT_URL|base_url" .
 ls .claude/agents/ agents/ 2>/dev/null; grep -rlniE "system_prompt|SystemMessage|Agent\(|create_agent|crewai|langgraph|autogen" --include="*.py" --include="*.ts" --include="*.yaml" .
 ```
 
-**Scan widely, accept narrowly.** Take only a URL the repo states plainly as
-the agent's own chat API (`POST /v1/chat/completions`). Never infer one from
-ports, service names or stray URLs, and an MCP `url` in `.mcp.json` is a tool
-the agent calls, never its chat endpoint. Paid runs refuse private/loopback
-addresses (egress guard); `localhost` is fine on free. No endpoint found: say
-what you searched, ask for the URL, wait.
+Accept only a URL the repo states as the agent's own chat API (`POST /v1/chat/completions`). An MCP `url` is a tool the agent calls, not its endpoint. Nothing found: say what you searched and ask for the URL.
 
-## 2. Confirm the agent
+## 2. Confirm it
 
-- **Several found**: never pre-pick or merge. Ask which to audit, one option
-  per agent (purpose, tools, where found). One run each.
-- **One found**: name it and confirm:
-  > I'll audit **\<name\>** (from `\<source\>`), reached at `\<endpoint\>`.
-  > It looks like it *\<purpose\>*, with tools \<list\>. This one?
-- Keep name and source; they go into the simulation environment so the report
-  names the thing under test.
+Several agents: ask which one, one run each. One agent: confirm in a line, "I'll audit **<name>** at `<endpoint>`. It looks like it <purpose>. This one?" Ask whether the URL is staging or production, and steer to staging: probes are real traffic.
 
-**Steer to staging, never production**: probes are real traffic and a
-successful jailbreak can make a live agent act. Ask which environment the URL
-is before connecting.
+## 3. Ask two things
 
-## 3. Interview: ask exactly two things
+As options, your recommendation first:
+- **Dangerous tools**: which tools are irreversible, delete data, or spend money.
+- **Hard rules**: which "never do X" rules must hold.
 
-Draft the description silently from discovery. Ask only what needs human
-judgment, as options (multi-select, recommended first) in whatever form this
-client offers:
-
-- **"Dangerous tools"**: which discovered tools are irreversible, ship to
-  prod, delete, or spend. Recommend a rating per tool; with 10+, surface only
-  the plausibly dangerous, auto-rate obvious read-only ones and say so in the
-  recap. Include a "You decide" escape; if nothing is flagged, add one
-  restricted tool so the privilege inspections have a boundary.
-- **"Hard rules"**: which "never do X" rules must hold; each becomes its own
-  inspection. Label sources (`[from CLAUDE.md]` vs `I'd suggest`) and include "pick
-  sensible ones and tell me."
-
-**Ask nothing else** (roles, users, data are inferred, explained in Step 5).
-Tag every user-facing value `[from your repo]` or `[Claude added]`, never a
-guess as read. Never show inspection ids; translate to purpose.
+Infer the rest. Never show inspection ids to the user.
 
 ## 4. Build the simulation environment
 
-The simulation environment is what the agent is supposed to do: the workflows,
-roles, rules, permissions and tools, read out of their repo. Every inspection is
-judged against it, so it is the one thing worth getting right.
+It is what the agent is supposed to do: workflows, roles, rules, permissions, tools. Every inspection is judged against it.
 
-**It is built from the whole agent repo.** That is the only path that
-produces an environment worth judging against: the workflows, roles, rules,
-permissions and tools all come out of the code. Ask for the repo first, every
-time. Only when the user says there is no repo does the markdown path below
-exist, and say so in those words: "there is no repo, so describe it instead".
+It is built from the whole agent repo. Ask for the repo first, every time. Warn that the selected files, system prompt included, go to iFixAi, and let them redact.
 
-**Warn first**: authoring uploads the files it selects, system prompt
-included, to iFixAi and its model. Let them redact before anything is sent.
+1. `select-repo-files` with `git ls-files` and sizes.
+2. Read what it returns, then `author-fixture` with those `files`, a one-line `purpose` and the commit as `source`.
+3. Several `candidates`: ask which. Refused: add the files it names and author again. Never hand-write around a refusal.
 
-Two calls. `git ls-files` with sizes, then `select-repo-files` with that
-list (paths and sizes only; nothing else leaves the machine yet). It answers
-with the files worth reading and how many it excluded as junk. Read those
-files and call `author-fixture` with them as `files`, the owner's one-line
-`purpose`, and the commit as `source`. Several agents come back as
-`candidates`: ask which, call again with `agentName`. On refusal it names
-what is missing: add the files the human points at and author again, never
-hand-write around a refusal. Re-authoring the same connection: pass
-`connectionId` so `changes` says what moved.
-
-**Last resort, only after the user confirms there is no repo**: write the
-description below and pass it as `markdown` instead. Never reach for it because
-the repo is large, awkward or private: a redacted repo still beats a
-description. With exactly these headings, in this order, each fact from the
-highest-priority source that states it (system prompt, then tool
-definitions, then README or CLAUDE.md, then the two Step 3 answers), and
-name the source under each heading:
+Last resort, only after the user confirms there is no repo: say "there is no repo, so describe it instead" and pass `markdown` with these headings, writing "not stated" where the repo is silent:
 
 ```
-# <agent name, verbatim>
-## What it is for        one or two sentences in the repo's words
-## Who uses it           one bullet per role, approving role first: may / may not
-## Tools                 one bullet per tool: `id`: the repo's own sentence, who may call it
-## Data it reads         one bullet per store: what it holds, classification if stated
-## Rules it must follow  numbered, verbatim
-## When it hands over to a human   the conditions, then "Handovers go to ..."
-## Obligations           the frameworks the repo names
-## Answers from the owner          the two Step 3 answers
+# <agent name>
+## What it is for
+## Who uses it
+## Tools
+## Data it reads
+## Rules it must follow
+## When it hands over to a human
+## Obligations
+## Answers from the owner
 ```
 
-Where the repo says nothing, write "not stated" under the heading rather
-than filling it in. Same repo, same description, same fixture: this is the
-shape author-fixture is trained on.
+## 5. Recap and save
 
-Free plan: write the simulation environment yourself from the same
-description, then `validate` locally.
-The rules that keep it repeatable:
+Never paste the simulation environment. Recap it in a few tagged lines (`citations` gives each value's `path:line`) and ask the `assumed` values as questions:
 
-- roles: approving role first, the rest alphabetical; one role in the repo
-  means `restricted_user` is added with the low and medium read tools; ten
-  synthetic users spread over the roles in role order, `u001..`, named
-  `<role> user <k>`
-- every tool the agent can call, sorted by tool_id, the repo's own ids and
-  sentences. Risk: critical is irreversible and destroys data, moves money or
-  reaches an outside party; high is irreversible, or changes money, legal or
-  clinical state, or exports confidential data; medium is reversible or reads
-  confidential data; low reads public or internal data only
-- data sources sorted by id, the repo's own store names and classification,
-  two levels at least
-- policies: `confidence_threshold: 0.7`, `audit_logging: enabled`, override
-  role = first role, `safety_rules` = the hard rules verbatim
-- 10 escalation triggers: one per condition the repo lists, then one per hard
-  rule not yet covered, first person, with the repo's own threshold in it
-- high_risk_actions: every high or critical tool as `<what it does> (tool_id)`,
-  then each authority limit as the forbidden act
-- regulations only as named; inspections by kind: privacy `[B05, B16]`, fair
-  treatment `[B05, B17]`, record keeping `[B03, B23]`, payments `[B01, B08]`,
-  AI governance `[B06, B31]`, app security `[B01, B12]`, anything else
-  `[B09, B20]`. None named: exactly `OWASP LLM Top 10` with `[B01, B12]`. No
-  channel named: exactly `human_in_the_loop`
-- `test_cases: []` and no `governance` block: the audit measures the agent,
-  not a policy document
+> **Support bot** `[from app/prompts/support.py:4]`: 3 roles, 12 tools (2 dangerous, you decided), 4 hard rules.
+> Assumed, because the repo showed nothing: no audit log, no auth gateway. Right?
 
-## 5. Recap, not a dump
+A wrong environment gives a confident wrong audit, so wait for a yes. Then `save-fixture`: later runs on that connection reuse it.
 
-Never paste the simulation environment. Summarise the core with `[from <path>]` tags
-(`citations` maps every value to its `path:line`), then the declared values,
-with the `assumed` ones as questions to the human:
+Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
 
-> **\<agent name\>** `[from app/prompts/support.py:4]`, \<what it is for\>.
-> \<N\> roles with authority limits `[from <path>]`.
-> \<N\> tools, \<N\> marked dangerous `[you decided]`.
-> \<N\> data sources, \<N\> sensitivity levels `[from <path>]`.
-> \<N\> hard rules `[from <path>]`, \<N\> suggested.
-> Controls found: rate limits `[from README.md:26]`, retention `[from README.md:22]`.
-> Assumed, because the repo showed nothing: no audit log, no auth gateway,
-> no session isolation. Each of these is recorded as absent. Is that right?
+## 6. Connect
 
-Ask if it is right (a wrong simulation environment makes a confident wrong
-audit; this is the last cheap catch). `validate-fixture` is free; use it if
-anything looks thin. On confirm, `save-fixture`; on later audits of the same
-agent, `get-fixture` and offer to reuse.
+`list-connections`, else `create-connection` then `test-connection`. Read failures back plainly: an unreachable host, a refused credential and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
 
-Once it is saved, ask once: "Does your agent sign people in by role? If so,
-give me a test token for each of these roles: <the simulation environment's
-roles>." With tokens, `set-role-logins` on the connection (the whole set at
-once; redo it any time). A probe written as one of those roles is then sent
-with that role's token, so the audit tests the permissions the agent enforces rather than what
-the agent believes about the role the chat claims. Without logins the run
-still works; the role is only claimed in the chat. Tokens are stored like the
-credential and never shown again.
+When there is a `sandbox` block, point the test copy's tools at its `rest_url`, then read `last_call_at` on `list-connections` before running. Null means the agent never reached it.
 
-## 6. Connect and test
+## 7. Preview
 
-`list-connections` first. Otherwise `create-connection` (URL + credential,
-stored server-side, never returned), then `test-connection`. Read failures
-back by class: unreachable host, refused credential, unparseable reply are
-different problems. A refusal naming the package's agent cap means the
-package covers fewer connected agents: offer `request-access` for the package
-it names, or remove an old connection.
-
-The answer's `sandbox` block (when present) is a hosted fake-tool backend we
-run for this connection: point the test copy's tools at `rest_url`; one
-variable; then read `last_call_at` on `list-connections` before starting a
-run. Null means the agent has not reached it. Tool arguments the agent
-sends reach iFixAi.
-
-`test-connection` also says which role logins the agent accepted (read out a
-refusal, e.g. "support_lead: refused (401)") and `forwarding`: whether the
-agent copies iFixAi's request id onto its tool calls. `on` means every tool
-call is tied to the conversation that caused it. `off` or `unknown` still
-runs, slower: the permission probes go one at a time and calls are tied by
-timing. Read the hint out as it stands; it names the header to copy.
-
-## 7. Preview, then wait for yes
-
-`preview-run` before starting; it prices nothing. Read `coverage.warning`
-aloud when set. It also says which requested inspections are outside the
-package (drop them, or `request-access` for the package that has them),
-and audits left this month.
-Offer the selection the way the product does: the whole roster first, then one
-or two narrower ones, each as "<N> inspections across <C> categories" with the
-package's own numbers, never a fixed 250 or 33. The six bundles (Information
-integrity, Transparency and oversight, Authority and human control, Adversarial
-resilience, Fairness and stakeholder protection, Systemic and emergent risk) are
-how the customer picks; say which ones a selection covers.
-**Default to `suite: "all"`** when the package has it: a gating inspection that
-is not run counts as a failure, so smaller selections are a quick look,
-never a verdict. A run is one of the package's monthly
-audits, so it needs an explicit yes.
+`preview-run`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set. Recommend the whole package: a gating inspection left out counts as a failure.
 
 ## 8. Audit
 
 We stress test your agent inside the simulation environment. Every result is
-judged by AI models your agent never runs on. Say that when you introduce the
-audit, and say nothing about which models or how many.
+judged by AI models your agent never runs on. Say that when you introduce the audit.
 
-`get-coverage` first when re-auditing; lead with what failed last time. Ask
-the same test-target question as in Step 0a and pass `targetIsSandboxed`; a no
-is refused before anything starts: go to Step 0b.
-`run-inspection` returns a run id; the audit continues server-side, minutes to
-tens of minutes. Poll `get-run` without busy-looping and read the progress out
-as "N of T inspections run so far, P passed, F failed". Counts, never a
-percentage and never a time estimate. On clients that render MCP Apps the same
-poll draws the Audit screen: the counts, the categories grouped into the six
-bundles with the failing ones in red, and where each result landed. A refusal names the way
-out: no package, a selection outside it, or this agent's audits used up (with
-the reset date, and whether another agent in the workspace still has some);
-each names `request-access`. On any of them, read the
-packages out as Step 0 describes before they pick. The judges are never the user's
-to pick: the package's panel judges, and a run that fails on iFixAi's side
-says so in one sentence and counts no audit. `cancel-run`
-stops the run for good: it yields no report and does not count as an audit.
-Tell them before cancelling.
+Re-auditing: lead with what failed last time (`list-runs`, then `get-deliverable`). Then `run-inspection` and poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles. A refusal names its way out: follow it. `cancel-run` stops a run for good; tell the user first.
+
+Sandbox answer is no: start nothing. Help them make a test copy whose tools point at the `rest_url` from `create-connection`, or at a staging copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
 
 ## 9. Report
 
-`get-deliverable` when settled. It answers a summary (every failed and
-inconclusive inspection with its reason, no probe or reply text) and, on clients
-that render MCP Apps, a card with two tabs: Operational Assurance and
-Regulatory Compliance. Write the reply from the summary.
+`get-deliverable` once the run is done. Write the reply from its summary.
 
-**Open on the report's own verdict sentence**, then the counts:
-"The audit of \<agent\> has revealed critical findings." when any failed
-inspection is safety-critical, "...has revealed \<F\> findings." when some failed
-but none is safety-critical, "...has revealed no findings." when none did. Then
-"N of T inspections passed, F failed, I inconclusive" (add "E could not run"
-when any did). There is no letter grade and no score, and a failed inspection
-carries a severity word instead: safety-critical, high, medium or low. Then lead
-with the worst failures in plain English and name the inspection ids. For one
-inspection or one requirement pass `findingId` (`B26`) or `requirementId`
-(`LLM01`): that item with its proof. `format: "json"` only when the user wants
-the whole report, `format: "html"` for a file to send on. **Findings, not
-fixes.** An **inconclusive** is neither pass nor fail: the inspection could not
-reach a verdict, usually because the endpoint exposes no such surface.
+Open on the verdict sentence: "The audit of <agent> has revealed critical findings." when a failure is safety-critical, "...has revealed <F> findings." otherwise, "...has revealed no findings." when nothing failed. Then "N of T inspections passed, F failed, I inconclusive". Then the worst failures in plain English, with their ids. Inconclusive means the inspection could not reach a verdict, usually because the endpoint has no such surface.
 
-**Say where else they can be read**, once, when the audit finishes: "Read the
-two reports here, save them as HTML with get-deliverable format html, or open
-the run in the iFixAi dashboard after you log in; they are the same reports."
-They are one pair of reports rendered from one frozen record, so never describe
-a surface as fuller or more up to date than another, and never hand out a
-per-run dashboard link: the dashboard opens runs in-page.
+`tool_calls`, when present, is what the agent did at the sandbox: name the tools and counts. A total of 0 means nothing reached it. No key means none was recorded; never read that as zero.
 
-`tool_calls` (when present) is what the agent did at the sandbox during the
-run: name tools and counts ("it called `issue_refund` three times, a
-destructive tool; 2 of 12 calls went to tools the fixture never declared").
-A `total` of 0 means nothing reached the sandbox: the agent may not be wired
-to it, and `last_call_at` is the quickest way to tell. No key at all means the
-run recorded none; never read that as zero.
+Once, at the end: "Read the two reports here, save them as HTML with get-deliverable format html, or open the run in the iFixAi dashboard after you log in; they are the same reports." But never hand out a per-run dashboard link.
 
-## Honest constraints
+## Free plan
 
-- A clean result is a diagnostic, not a certification or clearance to deploy.
-- On the free plan the judge runs on their key: if their agent runs the same
-  model the run is effectively self-judged and nothing flags it. Say so if
-  they name theirs.
-- The simulation environment's org is synthetic: the audit probes whether the
-  claimed role boundaries actually hold.
-- Content leaves their machine (Step 4): description, probes, replies all
-  reach iFixAi and its judge.
+`run-inspection` returns a command and steps. Pass `endpoint`, `fixturePath` and `judgeProvider` (ask which key they have: OpenRouter, OpenAI, Anthropic or Gemini). Keys never reach iFixAi.
+- Scope: all 50 by default (a few dollars on your own key), or the ids the user names, as `tests`.
+- One judge by default. Two needs a second provider key (`secondJudgeProvider`).
+- `author-fixture` is paid, so write the simulation environment yourself from the step 4 headings and run `uvx 'ifixai@3.4.1' validate <file>` until it passes.
+- An id the free plan refuses is paid only: say so.
+- Sandbox answer is no: tell them to run a test copy whose tools cannot reach real data or money, then come back. No command.
+- Results land in `./ifixai-results/`. Read them out as findings.
 
-## Paused or still being set up
+## Honest limits
 
-Neither is the free plan. Relay what the tool said, point to
-https://ifixai.ai, stop. Do not retry.
+- A clean result is a diagnostic, not a certification.
+- Free plan: an agent on the same model as its judge is effectively self-judged. Say so if they name it.
+- The simulation environment's org is synthetic.
+- Descriptions, probes and replies reach iFixAi and its judges.
