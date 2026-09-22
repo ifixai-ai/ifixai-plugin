@@ -3,6 +3,20 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.4 (2026-09-22)
+
+- The guide names only the tools the connector still has. A paid run covers
+  the whole package or whole bundles; a free run covers all 50, or the ids
+  the user names.
+
+## 0.4.3 (2026-09-21)
+
+- The guide is a third of its old length. The demo, the package rules, the
+  sandbox question and "findings, never fixes" live in the MCP server's
+  instructions now, so the guide no longer repeats them.
+- The free plan writes its simulation environment from the step 4 headings
+  and validates it; the long fixture rulebook is gone.
+
 ## 0.4.2 (2026-09-17)
 
 - After the simulation environment is saved, ask once for a test token per
