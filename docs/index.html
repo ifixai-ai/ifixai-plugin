@@ -58,13 +58,13 @@
 </header>
 
 <h2>What it does</h2>
-<p>iFixAi dials <strong>your</strong> agent over its own HTTP endpoint and puts it through up to 129 inspections: does it invent facts, exceed its authority, leak data it shouldn't, change its story under pressure, act when it should escalate. You get a graded report with the exact prompt that caused each failure and the agent's exact reply.</p>
+<p>iFixAi dials <strong>your</strong> agent over its own HTTP endpoint and puts it through inspections: does it invent facts, exceed its authority, leak data it shouldn't, change its story under pressure, act when it should escalate. You get a graded report with the exact prompt that caused each failure and the agent's exact reply.</p>
 <p>It reports what your agent got wrong. It does not prescribe fixes.</p>
 
 <h2>Two plans, one connector</h2>
 <ul>
-  <li><strong>Free.</strong> Signing in is enough. You get the 50 open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
-  <li><strong>Paid.</strong> A workspace on a paid package unlocks up to 129 inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
+  <li><strong>Free.</strong> Signing in is enough. You get the open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
+  <li><strong>Paid.</strong> A workspace on a paid package unlocks more inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
 </ul>
 
 <h2>What you need first</h2>
@@ -147,9 +147,9 @@
 </div>
 
 <h2>Choosing what to run</h2>
-<p>Suites range from <code>smoke</code> (3 inspections) to <code>all</code> (up to 129 hosted, as far as your package reaches; the free roster is the 50 open-source inspections). Preview first: <code>preview-run</code> tells you two things that aren't obvious from the suite name.</p>
+<p>Suites range from a few inspections to <code>all</code> (hosted, as far as your package reaches; the free roster is the open-source inspections). Preview first: <code>preview-run</code> tells you two things that aren't obvious from the suite name.</p>
 <ul>
-  <li><strong>Whether the selection can produce a passing grade.</strong> Four inspections are gating. A gating inspection you don't run is scored as a failure, so any suite short of <code>all</code> returns a capped grade. Smaller suites are useful diagnostics, not verdicts.</li>
+  <li><strong>Whether the selection can produce a passing grade.</strong> Some inspections are gating. A gating inspection you don't run is scored as a failure, so any suite short of <code>all</code> returns a capped grade. Smaller suites are useful diagnostics, not verdicts.</li>
   <li><strong>How much of it reaches your agent.</strong> About half the roster inspects a governance surface that a plain chat endpoint doesn't expose. Those read inconclusive against an HTTP target.</li>
 </ul>
 

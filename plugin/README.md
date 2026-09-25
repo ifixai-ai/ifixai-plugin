@@ -26,9 +26,9 @@ password, and your agent's credential is stored server-side and never returned.
 ## Requirements
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
-  straight away: the 50 open-source inspections, run on your own machine with
+  straight away: the open-source inspections, run on your own machine with
   your own LLM key. A paid workspace on a package
-  adds the iFixAi-only inspections, up to 129 in total, and runs them for you.
+  adds the iFixAi-only inspections and runs them for you.
 - An agent speaking OpenAI-shaped chat completions. For hosted (paid) runs it
   must be at a public HTTPS endpoint: private and loopback addresses are refused
   when dialled. Free runs dial from your own machine, so localhost is fine.
