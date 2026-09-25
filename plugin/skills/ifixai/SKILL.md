@@ -14,9 +14,11 @@ The demo, the package rules, the sandbox question and "findings, never fixes" ar
 ## 0. Plan
 
 `get-plan` (after the demo, when the demo applies).
-- `free`: runs on the user's machine. Follow **Free plan** at the end.
-  The free smoke test and promo codes are claimed in the dashboard (https://ifixai-dashboard.vercel.app/setup), then come back here.
-- `paid`: read back the package and the audits left this month with the reset date. No package but a grant: it can run that grant, read back its audits left.
+- `free`: offer two paths, open source first.
+  1. Open source, free: on the user's machine with their own LLM key, on the latest ifixai. Follow **Free plan** at the end.
+  2. Hosted by iFixAi, the full report: claim the free fast audit or redeem a promo code in the dashboard (https://ifixai-dashboard.vercel.app/setup), then come back here.
+- `paid`: read back the package and the audits left this month with the reset date. No package but a grant with audits left: it runs hosted, read back what `grants` says.
+- A grant used up or expired: say so, then offer the open-source path (**Free plan**) and the `upgrade` line.
 - "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.
 
 ## 1. Find the agent
@@ -120,12 +122,14 @@ Open on the verdict sentence: "The audit of <agent> has revealed critical findin
 
 Once, at the end: "Read the two reports here, save them as HTML with get-deliverable format html, or open the run in the iFixAi dashboard after you log in; they are the same reports." But never hand out a per-run dashboard link.
 
+A grant's report (no package) ends on its one `upgrade` line, which ends on `request-access`. No prices.
+
 ## Free plan
 
 `run-inspection` returns a command and steps. Pass `endpoint`, `fixturePath` and `judgeProvider` (ask which key they have: OpenRouter, OpenAI, Anthropic or Gemini). Keys never reach iFixAi.
 - Scope: the open-source inspections by default (a few dollars on your own key), or the ids the user names, as `tests`.
 - One judge by default. Two needs a second provider key (`secondJudgeProvider`).
-- `author-fixture` is paid, so write the simulation environment yourself from the step 5 headings and run `uvx 'ifixai@3.4.1' validate <file>` until it passes.
+- `author-fixture` is paid, so write the simulation environment yourself from the step 5 headings and run `uvx 'ifixai@4.0.0' validate <file>` until it passes.
 - An id the free plan refuses is paid only: say so.
 - Sandbox answer is no: tell them to run a test copy whose tools cannot reach real data or money, then come back. No command.
 - Results land in `./ifixai-results/`. Read them out as findings.
