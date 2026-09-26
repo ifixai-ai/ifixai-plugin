@@ -3,6 +3,14 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.5 (2026-09-25)
+
+- New describe prompt; Connect before Build.
+- Grant workspaces can run. No inspection ids or totals.
+- Privacy page redirects to ifixai.ai/privacy.
+- No package: open source on your machine, or a hosted fast audit. Validate
+  with ifixai 4.0.0.
+
 ## 0.4.4 (2026-09-22)
 
 - The guide names only the tools the connector still has. A paid run covers
