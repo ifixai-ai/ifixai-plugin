@@ -63,14 +63,14 @@
 
 <h2>Two plans, one connector</h2>
 <ul>
-  <li><strong>Free.</strong> Signing in is enough. You get the open-source inspections, and <code>run-inspection</code> hands you a command that runs them on <strong>your machine with your own LLM key</strong>. Nothing is billed and nothing is saved to iFixAi.</li>
+  <li><strong>Free.</strong> Signing in is enough. Claim the free fast audit or redeem a promo code in the <a href="https://ifixai-dashboard.vercel.app/setup">dashboard</a>, then come back: iFixAi runs it against your deployed agent and hands back the report.</li>
   <li><strong>Paid.</strong> A workspace on a paid package unlocks more inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
 </ul>
 
 <h2>What you need first</h2>
 <ul>
   <li>An <strong>iFixAi sign-in</strong>. That alone puts you on the free plan.</li>
-  <li>For hosted runs: a <strong>paid workspace on a package</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before spending anything. Free local runs have no such limit: your machine dials the endpoint, localhost included.</li>
+  <li>For a run: the free fast audit, a promo code or a <strong>paid package</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before spending anything.</li>
 </ul>
 
 <h2>Connect</h2>
@@ -83,7 +83,6 @@
 </div>
 
 <h2>The order things happen in</h2>
-<p>On the free plan, steps 2–3 fall away: <code>run-inspection</code> returns the local command directly, with your endpoint and fixture file passed as arguments.</p>
 <ol>
   <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes a <em>fixture</em>: the spec iFixAi grades against. Free.</li>
   <li><strong>Register the endpoint.</strong> URL plus credential. Test it before spending anything.</li>
@@ -97,9 +96,6 @@
 </div>
 
 <h2>Example prompts</h2>
-
-<h3>0. Try it free, on your own machine</h3>
-<div class="prompt">"Audit the agent in this repo with iFixAi. I'm on the free plan: write the fixture, then give me the command to run it locally."</div>
 
 <h3>1. Set up and inspect an agent end to end</h3>
 <div class="prompt">"Here's my support agent's system prompt: [paste]. Author an iFixAi fixture from it, register the agent at https://api.example.com/v1/chat/completions with my bearer token, and quote a full inspection."</div>
@@ -117,7 +113,7 @@
 <div class="prompt">"Cancel the inspection I just started. I picked the wrong suite."</div>
 
 <h2>Tools</h2>
-<p>Seven tools answer on the free plan: <code>get-plan</code>, <code>list-inspections</code>, <code>run-demo-audit</code>, <code>run-inspection</code>, <code>request-access</code>, <code>list-access-requests</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
+<p>Five tools answer on the free plan: <code>get-plan</code>, <code>run-demo-audit</code>, <code>request-access</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
 <div class="scroll">
 <table>
   <thead><tr><th>Tool</th><th>Does</th><th>Counts an audit</th></tr></thead>
@@ -132,7 +128,7 @@
     <tr><td>create-connection</td><td>Registers your agent's endpoint and credential</td><td>no</td></tr>
     <tr><td>test-connection</td><td>Dials your agent once to check it answers</td><td>no</td></tr>
     <tr><td>list-connections</td><td>Endpoints registered in your workspace</td><td>no</td></tr>
-    <tr><td>run-inspection</td><td>Paid: starts a hosted run, returns a run id immediately. Free: returns the command to run locally</td><td><strong>paid, once it completes</strong></td></tr>
+    <tr><td>run-inspection</td><td>Starts a hosted run, returns a run id immediately</td><td><strong>paid, once it completes</strong></td></tr>
     <tr><td>get-run</td><td>Status, grade and score</td><td>no</td></tr>
     <tr><td>list-runs</td><td>Your runs, newest first</td><td>no</td></tr>
     <tr><td>get-deliverable</td><td>The frozen report for a finished run</td><td>no</td></tr>
@@ -147,7 +143,7 @@
 </div>
 
 <h2>Choosing what to run</h2>
-<p>Suites range from a few inspections to <code>all</code> (hosted, as far as your package reaches; the free roster is the open-source inspections). Preview first: <code>preview-run</code> tells you two things that aren't obvious from the suite name.</p>
+<p>Suites range from a few inspections to <code>all</code> (hosted, as far as your package reaches). Preview first: <code>preview-run</code> tells you two things that aren't obvious from the suite name.</p>
 <ul>
   <li><strong>Whether the selection can produce a passing grade.</strong> Some inspections are gating. A gating inspection you don't run is scored as a failure, so any suite short of <code>all</code> returns a capped grade. Smaller suites are useful diagnostics, not verdicts.</li>
   <li><strong>How much of it reaches your agent.</strong> About half the roster inspects a governance surface that a plain chat endpoint doesn't expose. Those read inconclusive against an HTTP target.</li>

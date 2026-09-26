@@ -1,6 +1,6 @@
 ---
 name: ifixai
-description: Audit the user's deployed AI agent with iFixAi, free on their own machine or hosted on a paid workspace. You find the agent in their repo, build its simulation environment, connect its endpoint, run the audit and explain what it found. Use when the user asks to audit, inspect, red-team or stress-test an agent, read their iFixAi package, or read a past run.
+description: Audit the user's deployed AI agent with iFixAi, hosted on a paid workspace. You find the agent in their repo, build its simulation environment, connect its endpoint, run the audit and explain what it found. Use when the user asks to audit, inspect, red-team or stress-test an agent, read their iFixAi package, or read a past run.
 ---
 
 # iFixAi: audit your deployed agent
@@ -14,11 +14,9 @@ The demo, the package rules, the sandbox question and "findings, never fixes" ar
 ## 0. Plan
 
 `get-plan` (after the demo, when the demo applies).
-- `free`: offer two paths, open source first.
-  1. Open source, free: on the user's machine with their own LLM key, on the latest ifixai. Follow **Free plan** at the end.
-  2. Hosted by iFixAi, the full report: claim the free fast audit or redeem a promo code in the dashboard (https://ifixai-dashboard.vercel.app/setup), then come back here.
+- `free`: claim the free fast audit or redeem a promo code in the dashboard (https://ifixai-dashboard.vercel.app/setup), then come back here.
 - `paid`: read back the package and the audits left this month with the reset date. No package but a grant with audits left: it runs hosted, read back what `grants` says.
-- A grant used up or expired: say so, then offer the open-source path (**Free plan**) and the `upgrade` line.
+- A grant used up or expired: say so, then the `upgrade` line.
 - "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.
 
 ## 1. Find the agent
@@ -124,19 +122,8 @@ Once, at the end: "Read the two reports here, save them as HTML with get-deliver
 
 A grant's report (no package) ends on its one `upgrade` line, which ends on `request-access`. No prices.
 
-## Free plan
-
-`run-inspection` returns a command and steps. Pass `endpoint`, `fixturePath` and `judgeProvider` (ask which key they have: OpenRouter, OpenAI, Anthropic or Gemini). Keys never reach iFixAi.
-- Scope: the open-source inspections by default (a few dollars on your own key), or the ids the user names, as `tests`.
-- One judge by default. Two needs a second provider key (`secondJudgeProvider`).
-- `author-fixture` is paid, so write the simulation environment yourself from the step 5 headings and run `uvx 'ifixai@4.0.0' validate <file>` until it passes.
-- An id the free plan refuses is paid only: say so.
-- Sandbox answer is no: tell them to run a test copy whose tools cannot reach real data or money, then come back. No command.
-- Results land in `./ifixai-results/`. Read them out as findings.
-
 ## Honest limits
 
 - A clean result is a diagnostic, not a certification.
-- Free plan: an agent on the same model as its judge is effectively self-judged. Say so if they name it.
 - The simulation environment's org is synthetic.
 - Descriptions, probes and replies reach iFixAi and its judges.
