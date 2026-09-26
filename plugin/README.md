@@ -26,12 +26,11 @@ password, and your agent's credential is stored server-side and never returned.
 ## Requirements
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
-  straight away: the open-source inspections, run on your own machine with
-  your own LLM key. A paid workspace on a package
-  adds the iFixAi-only inspections and runs them for you.
-- An agent speaking OpenAI-shaped chat completions. For hosted (paid) runs it
-  must be at a public HTTPS endpoint: private and loopback addresses are refused
-  when dialled. Free runs dial from your own machine, so localhost is fine.
+  straight away: claim the free fast audit or redeem a promo code in the
+  dashboard (https://ifixai-dashboard.vercel.app/setup). A paid workspace on a
+  package adds the iFixAi-only inspections and audits every month.
+- An agent speaking OpenAI-shaped chat completions at a public HTTPS endpoint:
+  private and loopback addresses are refused when dialled.
 
 ## What it can do
 

@@ -27,12 +27,12 @@ judges and scoring live in iFixAi.
 
 ## Two tiers
 
-**Free.** Sign in and the open-source inspections run on your own machine,
-with your own LLM key, against your own agent. Nothing is billed, nothing is
-saved with us, and your key never reaches us.
+**Free.** Sign in, then claim the free fast audit or redeem a promo code in the
+dashboard (https://ifixai-dashboard.vercel.app/setup). iFixAi runs it against
+your agent and hands back the report.
 
 **Paid.** A workspace on a paid package adds the
-iFixAi-only inspections, runs we execute for you, saved
+iFixAi-only inspections, audits every month, saved
 history and the report. Ask for one with `request-access`; a person assigns it.
 
 ## Getting access

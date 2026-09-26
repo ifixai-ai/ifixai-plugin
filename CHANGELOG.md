@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.6 (2026-09-26)
+
+- Hosted only. No package: claim the free fast audit or redeem a promo code in
+  the dashboard, then come back. A used-up grant gets the upgrade line. The
+  guide and docs no longer offer a run on the user's machine.
+
 ## 0.4.5 (2026-09-25)
 
 - New describe prompt; Connect before Build.
