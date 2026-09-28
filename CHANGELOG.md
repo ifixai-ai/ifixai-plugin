@@ -3,6 +3,20 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.9 (2026-09-28)
+
+- No repo: the guide gives the owner iFixAi's brief, not its own prompt.
+- One question round: the owner's answers go back to author-fixture, the setup
+  answers to save-fixture. No second round, and no suggested record ids.
+- Answers go back one line per question, `<subject>: <answer>`, so they fill
+  what was asked.
+- Honest limits: the simulation environment's test users are made up.
+
+## 0.4.8 (2026-09-28)
+
+- The guide no longer says a gating inspection left out counts as a failure.
+- A run that stopped early opens on how far it got.
+
 ## 0.4.7 (2026-09-28)
 
 - Dashboard link now points to app.ifixai.ai.
