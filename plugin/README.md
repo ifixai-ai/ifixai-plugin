@@ -27,7 +27,7 @@ password, and your agent's credential is stored server-side and never returned.
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
   straight away: claim the free fast audit or redeem a promo code in the
-  dashboard (https://ifixai-dashboard.vercel.app/setup). A paid workspace on a
+  dashboard (https://app.ifixai.ai/setup). A paid workspace on a
   package adds the iFixAi-only inspections and audits every month.
 - An agent speaking OpenAI-shaped chat completions at a public HTTPS endpoint:
   private and loopback addresses are refused when dialled.
