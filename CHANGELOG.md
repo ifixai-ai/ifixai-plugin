@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.7 (2026-09-28)
+
+- Dashboard link now points to app.ifixai.ai.
+
 ## 0.4.6 (2026-09-26)
 
 - Hosted only. No package: claim the free fast audit or redeem a promo code in

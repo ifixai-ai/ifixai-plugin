@@ -14,7 +14,7 @@ The demo, the package rules, the sandbox question and "findings, never fixes" ar
 ## 0. Plan
 
 `get-plan` (after the demo, when the demo applies).
-- `free`: claim the free fast audit or redeem a promo code in the dashboard (https://ifixai-dashboard.vercel.app/setup), then come back here.
+- `free`: claim the free fast audit or redeem a promo code in the dashboard (https://app.ifixai.ai/setup), then come back here.
 - `paid`: read back the package and the audits left this month with the reset date. No package but a grant with audits left: it runs hosted, read back what `grants` says.
 - A grant used up or expired: say so, then the `upgrade` line.
 - "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.

@@ -28,7 +28,7 @@ judges and scoring live in iFixAi.
 ## Two tiers
 
 **Free.** Sign in, then claim the free fast audit or redeem a promo code in the
-dashboard (https://ifixai-dashboard.vercel.app/setup). iFixAi runs it against
+dashboard (https://app.ifixai.ai/setup). iFixAi runs it against
 your agent and hands back the report.
 
 **Paid.** A workspace on a paid package adds the
