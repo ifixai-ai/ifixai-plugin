@@ -36,8 +36,6 @@ Several agents: ask which one, one run each. One agent: confirm in a line, "I'll
 
 `list-connections`, else `create-connection` then `test-connection`. Read failures back plainly: an unreachable host, a refused credential and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
 
-Offer the sandbox only when `test-connection` reports no way to see tool calls (`none`): point the test copy's tools at its `rest_url`, then read `last_call_at` on `list-connections` before running. Null means the agent never reached it.
-
 ## 4. Ask two things
 
 As options, your recommendation first:
@@ -99,7 +97,12 @@ Then ask once: "Does your agent sign people in by role? If so, give me a test to
 
 ## 7. Preview
 
-`preview-run`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set. Recommend the whole package: a gating inspection left out counts as a failure.
+`preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set. Recommend the whole package: a gating inspection left out counts as a failure.
+
+`sandbox` with `reached: false`: read its `message` out and wait for a pick, unless the user already chose 1 and restarted: then carry on.
+- 1: if this session can edit the test copy's repo, apply `wire_prompt` there yourself, writing `rest_url` only into its untracked env file as `IFIXAI_SANDBOX_URL`; never print it. Only when you can't (e.g. claude.ai), give the user `wire_prompt` and `rest_url` once, and never repeat the address after that. Then the sandbox question. The report's `tool_calls` confirms the wiring.
+- 2: the sandbox question, as usual.
+- 3: stop. Nothing runs.
 
 ## 8. Audit
 
@@ -108,7 +111,7 @@ judged by AI models your agent never runs on. Say that when you introduce the au
 
 Re-auditing: lead with what failed last time (`list-runs`, then `get-deliverable`). Then `run-inspection` and poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles. A refusal names its way out: follow it. `cancel-run` stops a run for good; tell the user first.
 
-Sandbox answer is no: start nothing. Help them make a test copy whose tools point at the `rest_url` from `create-connection`, or at a staging copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
+Sandbox answer is no: start nothing. Help them make a test copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
 
 ## 9. Report
 
