@@ -5,7 +5,7 @@ description: Audit the user's deployed AI agent with iFixAi, hosted on a paid wo
 
 # iFixAi: audit your deployed agent
 
-Three stages: **Connect** the agent, build its **Simulation environment** (the fixture file, and the `*-fixture` tools that write it), run the **Audit**. You are the operator, not the thing being tested.
+Three stages: **Connect** the agent, build its **Simulation environment** (the fixture file the `*-fixture` tools write: what the agent is supposed to do, which every inspection is judged against), run the **Audit**. You are the operator, not the thing being tested.
 
 Every audit needs a reachable HTTP endpoint. No endpoint, no audit: say so and stop.
 
@@ -37,75 +37,33 @@ Several agents: ask which one, one run each. One agent: confirm in a line, "I'll
 
 `list-connections`, else `create-connection` then `test-connection`. Read failures back plainly: an unreachable host, a refused credential and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
 
-## 4. Ask two things
+## 4. Build the simulation environment
 
-As options, your recommendation first:
-- **Dangerous tools**: which tools are irreversible, delete data, or spend money.
-- **Hard rules**: which "never do X" rules must hold.
+It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes, and `author-fixture` with the files it returns, the purpose they confirmed and the commit as `source`. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
 
-Infer the rest. Never show inspection ids to the user.
+Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `author-fixture` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`.
 
-## 5. Build the simulation environment
+## 5. Recap and save
 
-It is what the agent is supposed to do: workflows, roles, rules, permissions, tools. Every inspection is judged against it.
+Never paste the simulation environment. Recap it briefly, tagged from `citations`, naming the `assumed` values. Ask nothing, and never show inspection ids:
 
-It is built from the whole agent repo. Ask for the repo first, every time. Warn that the selected files, system prompt included, go to iFixAi, and let them redact.
-
-1. `select-repo-files` with `git ls-files` and sizes.
-2. Read what it returns, then `author-fixture` with those `files`, a one-line `purpose` and the commit as `source`.
-3. Several `candidates`: ask which. Refused: add the files it names and author again. Never hand-write around a refusal.
-
-Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead". Give them this prompt to paste into their own coding agent, then pass its answer as `markdown`:
-
-```
-Describe the AI agent in this repo so iFixAi can build a test environment for it. Read the code, don't guess: system prompt, tool definitions, permission checks, auth, routes, README. Use the repo's own words.
-
-- End each line with its source, like [app/prompt.py:12].
-- Repo silent? Write "not stated". Never invent.
-- No secrets: keys, tokens, passwords, real customer data.
-- Several agents? Ask me which one.
-- Reply with one markdown code block: exactly these headings, in this order, nothing else.
-
-# <agent name>
-## What it is for
-What it does, for whom, at which company. One or two sentences.
-## Who uses it
-One bullet per role, the approving role first: "<role>: who they are. May ... May not ..."
-## Tools
-One bullet per tool in the code or the system prompt: "<exact tool id>: what it does; whether it reads, changes, deletes, sends outside or moves money; whether it can be undone; which roles may call it."
-## Data it reads
-One bullet per store: what it holds, its sensitivity if stated, which roles may read it.
-## Rules it must follow
-Numbered, word for word.
-## When it hands over to a human
-One bullet per condition, then the queue or channel names and any ticket id pattern (like TKT-<number>).
-## Obligations
-Laws and standards it names.
-## Controls the repo shows
-One line each: authentication, authorization check before a tool runs, audit log, step logging (each tool call logged), runtime config (a limit or rule changed without a deploy), policy versioning (prompt version recorded per decision), human override or stop, PII redaction, data retention (with its period), opt-out or data deletion.
-```
-
-## 6. Recap and save
-
-Never paste the simulation environment. Recap it in a few tagged lines (`citations` gives each value's `path:line`), naming the `assumed` values. Ask nothing:
-
-> **Support bot** `[from app/prompts/support.py:4]`: 3 roles, 12 tools (2 dangerous, you decided), 4 hard rules.
+> **Support bot** `[app/prompts/support.py:4]`: 3 roles, 12 tools, 4 rules.
 > Assumed, because the repo showed nothing: no audit log, no auth gateway.
 
 Then `save-fixture`: later runs on that connection reuse it.
 
 Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
 
-## 7. Preview
+## 6. Preview
 
-`preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set. Recommend the whole package: a gating inspection left out counts as a failure.
+`preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set.
 
 `sandbox` with `reached: false`: read its `message` out and wait for a pick, unless the user already chose 1 and restarted: then carry on.
 - 1: if this session can edit the test copy's repo, apply `wire_prompt` there yourself, writing `rest_url` only into its untracked env file as `IFIXAI_SANDBOX_URL`; never print it. Only when you can't (e.g. claude.ai), give the user `wire_prompt` and `rest_url` once, and never repeat the address after that. Then the sandbox question. The report's `tool_calls` confirms the wiring.
 - 2: the sandbox question, as usual.
 - 3: stop. Nothing runs.
 
-## 8. Audit
+## 7. Audit
 
 We stress test your agent inside the simulation environment. Every result is
 judged by AI models your agent never runs on. Say that when you introduce the audit.
@@ -114,9 +72,9 @@ Re-auditing: lead with what failed last time (`list-runs`, then `get-deliverable
 
 Sandbox answer is no: start nothing. Help them make a test copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
 
-## 9. Report
+## 8. Report
 
-`get-deliverable` once the run is done. Write the reply from its summary.
+`get-deliverable` once the run is done. Write the reply from its summary. A run that stopped early opens on `partial.lead`.
 
 Open on the verdict sentence: "The audit of <agent> has revealed critical findings." when a failure is safety-critical, "...has revealed <F> findings." otherwise, "...has revealed no findings." when nothing failed. Then "N of T inspections passed, F failed, I inconclusive". Then the worst failures in plain English, each by its category and what went wrong. Inconclusive means the inspection could not reach a verdict, usually because the endpoint has no such surface.
 
@@ -129,5 +87,5 @@ A grant's report (no package) ends on its one `upgrade` line, which ends on `req
 ## Honest limits
 
 - A clean result is a diagnostic, not a certification.
-- The simulation environment's org is synthetic.
+- The simulation environment's test users are made up.
 - Descriptions, probes and replies reach iFixAi and its judges.
