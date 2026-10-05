@@ -15,7 +15,8 @@ The demo, the package rules, the sandbox question and "findings, never fixes" ar
 
 `get-plan` (after the demo, when the demo applies).
 - `free`: claim the free fast audit or redeem a promo code in the dashboard (https://app.ifixai.ai/setup), then come back here.
-- `paid`: read back the package and the audits left this month with the reset date. No package but a grant with audits left: it runs hosted, read back what `grants` says.
+- `paid`: read back the package and the audits left this month with the reset date.
+- `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset.
 - A grant used up or expired: say so, then the `upgrade` line.
 - "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.
 
@@ -86,12 +87,12 @@ One line each: authentication, authorization check before a tool runs, audit log
 
 ## 6. Recap and save
 
-Never paste the simulation environment. Recap it in a few tagged lines (`citations` gives each value's `path:line`) and ask the `assumed` values as questions:
+Never paste the simulation environment. Recap it in a few tagged lines (`citations` gives each value's `path:line`), naming the `assumed` values. Ask nothing:
 
 > **Support bot** `[from app/prompts/support.py:4]`: 3 roles, 12 tools (2 dangerous, you decided), 4 hard rules.
-> Assumed, because the repo showed nothing: no audit log, no auth gateway. Right?
+> Assumed, because the repo showed nothing: no audit log, no auth gateway.
 
-A wrong environment gives a confident wrong audit, so wait for a yes. Then `save-fixture`: later runs on that connection reuse it.
+Then `save-fixture`: later runs on that connection reuse it.
 
 Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
 
