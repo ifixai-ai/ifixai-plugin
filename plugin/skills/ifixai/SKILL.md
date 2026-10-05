@@ -39,18 +39,18 @@ Several agents: ask which one, one run each. One agent: confirm in a line, "I'll
 
 ## 4. Build the simulation environment
 
-It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes, and `author-fixture` with the files it returns, the purpose they confirmed and the commit as `source`. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
+It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes, and `author-fixture` with the files it returns, the purpose they confirmed, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
 
-Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `author-fixture` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`.
+Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `author-fixture` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`, with the `connectionId`.
 
-## 5. Recap and save
+## 5. Recap
 
 Never paste the simulation environment. Recap it briefly, tagged from `citations`, naming the `assumed` values. Ask nothing, and never show inspection ids:
 
 > **Support bot** `[app/prompts/support.py:4]`: 3 roles, 12 tools, 4 rules.
 > Assumed, because the repo showed nothing: no audit log, no auth gateway.
 
-Then `save-fixture`: later runs on that connection reuse it.
+`author-fixture` saved it: later runs on that connection reuse it. Never re-send it with `save-fixture`.
 
 Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
 
