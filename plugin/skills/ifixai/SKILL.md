@@ -35,7 +35,7 @@ Several agents: ask which one, one run each. One agent: confirm in a line, "I'll
 
 ## 3. Connect
 
-`list-connections`, else `create-connection` then `test-connection`. Read failures back plainly: an unreachable host, a refused credential and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
+`list-connections`, else `create-connection` then `test-connection`. A row with `saved_environment` already has its simulation environment: skip 4 and 5, ask nothing. Read failures back plainly: an unreachable host, a refused credential and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
 
 ## 4. Build the simulation environment
 
@@ -59,7 +59,7 @@ Then ask once: "Does your agent sign people in by role? If so, give me a test to
 `preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set.
 
 `sandbox` with `reached: false`: read its `message` out and wait for a pick, unless the user already chose 1 and restarted: then carry on.
-- 1: if this session can edit the test copy's repo, apply `wire_prompt` there yourself, writing `rest_url` only into its untracked env file as `IFIXAI_SANDBOX_URL`; never print it. Only when you can't (e.g. claude.ai), give the user `wire_prompt` and `rest_url` once, and never repeat the address after that. Then the sandbox question. The report's `tool_calls` confirms the wiring.
+- 1: if this session can edit the test copy's repo, apply `wire_prompt` there yourself, writing `rest_url` only into its untracked env file as `IFIXAI_SANDBOX_URL`; never print it. Set it where the test copy runs, then restart or redeploy it. Only when you can't (e.g. claude.ai), give the user `wire_prompt` and send them to https://app.ifixai.ai/setup?resume=audit&agent=<connectionId>: its Audit step shows the address with a Copy button. Never print the address. Then the sandbox question. The report's `tool_calls` confirms the wiring.
 - 2: the sandbox question, as usual.
 - 3: stop. Nothing runs.
 
