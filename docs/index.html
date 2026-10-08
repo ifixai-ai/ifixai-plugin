@@ -63,7 +63,7 @@
 
 <h2>Two plans, one connector</h2>
 <ul>
-  <li><strong>Free.</strong> Signing in is enough. Claim the free fast audit or redeem a promo code in the <a href="https://app.ifixai.ai/setup">dashboard</a>, then come back: iFixAi runs it against your deployed agent and hands back the report.</li>
+  <li><strong>Free.</strong> Signing in is enough. Claim the free fast audit or redeem a promo code from the chat with <code>claim-fast-audit</code> or <code>redeem-code</code>: iFixAi runs it against your deployed agent and hands back the report.</li>
   <li><strong>Paid.</strong> A workspace on a paid package unlocks more inspections, run and graded by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
 </ul>
 
@@ -84,7 +84,7 @@
 
 <h2>The order things happen in</h2>
 <ol>
-  <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes a <em>fixture</em>: the spec iFixAi grades against. Free.</li>
+  <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes its <em>simulation environment</em>: the spec iFixAi grades against. Free.</li>
   <li><strong>Register the endpoint.</strong> URL plus credential. Test it before spending anything.</li>
   <li><strong>Preview the run.</strong> See what is outside your package, how much of your selection can actually reach your agent, and the audits left this month.</li>
   <li><strong>Run.</strong> Returns immediately with a run id; inspections take minutes to tens of minutes.</li>
@@ -92,13 +92,13 @@
 </ol>
 
 <div class="panel warn">
-  <p><strong>Why the fixture matters.</strong> Without one, iFixAi grades your agent against a generic placeholder, and the result is meaningless. The connector refuses to start a run that would do that.</p>
+  <p><strong>Why the simulation environment matters.</strong> Without one, iFixAi grades your agent against a generic placeholder, and the result is meaningless. The connector refuses to start a run that would do that.</p>
 </div>
 
 <h2>Example prompts</h2>
 
 <h3>1. Set up and inspect an agent end to end</h3>
-<div class="prompt">"Here's my support agent's system prompt: [paste]. Author an iFixAi fixture from it, register the agent at https://api.example.com/v1/chat/completions with my bearer token, and quote a full inspection."</div>
+<div class="prompt">"Here's my support agent's system prompt: [paste]. Build its iFixAi simulation environment from it, register the agent at https://api.example.com/v1/chat/completions with my bearer token, and quote a full inspection."</div>
 
 <h3>2. Check the cost and coverage before committing</h3>
 <div class="prompt">"What would it cost to run the core suite on my agent, and how many of those inspections actually dial it?"</div>
@@ -113,17 +113,15 @@
 <div class="prompt">"Cancel the inspection I just started. I picked the wrong suite."</div>
 
 <h2>Tools</h2>
-<p>Five tools answer on the free plan: <code>get-plan</code>, <code>run-demo-audit</code>, <code>request-access</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
+<p>Seven tools answer on the free plan: <code>get-plan</code>, <code>run-demo-audit</code>, <code>claim-fast-audit</code>, <code>redeem-code</code>, <code>request-access</code>, <code>search</code>, <code>fetch</code>. The rest need a paid workspace and say so plainly when they don't have one.</p>
 <div class="scroll">
 <table>
   <thead><tr><th>Tool</th><th>Does</th><th>Counts an audit</th></tr></thead>
   <tbody>
     <tr><td>get-plan</td><td>Which plan this account is on, its package and this month's audits</td><td>no</td></tr>
     <tr><td>list-inspections</td><td>The inspection roster and what each one checks</td><td>no</td></tr>
-    <tr><td>author-fixture</td><td>Turns your agent's description into a fixture</td><td>no</td></tr>
-    <tr><td>validate-fixture</td><td>Which inspections a fixture can run, and why the rest can't</td><td>no</td></tr>
-    <tr><td>save-fixture</td><td>Stores a fixture against a connection, so a rerun needs no re-authoring</td><td>no</td></tr>
-    <tr><td>get-fixture</td><td>The fixture saved for a connection</td><td>no</td></tr>
+    <tr><td>build-simulation-env</td><td>Turns your agent's repo or description into its simulation environment</td><td>no</td></tr>
+    <tr><td>save-simulation-env</td><td>Stores a simulation environment against a connection, so a rerun needs no re-authoring</td><td>no</td></tr>
     <tr><td>preview-run</td><td>What is outside your package, whether the judges fit, audits left, plus coverage warnings</td><td>no</td></tr>
     <tr><td>create-connection</td><td>Registers your agent's endpoint and credential</td><td>no</td></tr>
     <tr><td>test-connection</td><td>Dials your agent once to check it answers</td><td>no</td></tr>
@@ -135,7 +133,7 @@
     <tr><td>get-coverage</td><td>Which inspections your recent runs already exercised</td><td>no</td></tr>
     <tr><td>request-access</td><td>Asks for a package, or a bigger one; we assign it by hand</td><td>no</td></tr>
     <tr><td>list-access-requests</td><td>Your access requests and where each one stands</td><td>no</td></tr>
-    <tr><td>cancel-run</td><td>Stops a run for good; no report, and it does not count as an audit</td><td>no</td></tr>
+    <tr><td>stop-run</td><td>Stops a run and keeps what finished as a partial report</td><td>once anything finished</td></tr>
     <tr><td>search</td><td>Find inspections and your runs by keyword</td><td>no</td></tr>
     <tr><td>fetch</td><td>One search result as a document</td><td>no</td></tr>
   </tbody>
@@ -165,7 +163,7 @@
     <tr><td>this needs a paid workspace</td><td>You're on the free plan. The message says what the tool does and what paying adds; <code>request-access</code> asks for a package.</td></tr>
     <tr><td>workspace has no tenant</td><td>Provisioning didn't finish. Ask us.</td></tr>
     <tr><td>no package, outside the package, too many judges, audits used up</td><td>Each names the way out: drop the inspections, pass fewer judges, wait for the 1st, or <code>request-access</code> for the package that has it.</td></tr>
-    <tr><td>this run has no fixture</td><td>Author one first, see step 1.</td></tr>
+    <tr><td>this agent has no simulation environment</td><td>Build one first, see step 1.</td></tr>
     <tr><td>backend unreachable</td><td>Ours, not yours. Try again shortly.</td></tr>
   </tbody>
 </table>
