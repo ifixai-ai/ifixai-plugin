@@ -3,6 +3,16 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.8 (2026-10-05)
+
+- Sandbox choices before a run when the agent's tools never reached it. The
+  sandbox address stays out of chat.
+- Building the simulation environment asks nothing. No repo: the guide hands
+  over iFixAi's brief.
+- A run that stopped early opens on how far it got. The guide no longer says a
+  left-out gating inspection counts as a failure.
+- No package: read back what the grant holds.
+
 ## 0.4.7 (2026-09-28)
 
 - Dashboard link now points to app.ifixai.ai.

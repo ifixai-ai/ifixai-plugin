@@ -27,9 +27,8 @@ judges and scoring live in iFixAi.
 
 ## Two tiers
 
-**Free.** Sign in, then claim the free fast audit or redeem a promo code in the
-dashboard (https://app.ifixai.ai/setup). iFixAi runs it against
-your agent and hands back the report.
+**Free.** Sign in, then claim the free fast audit or redeem a promo code, right
+from Claude. iFixAi runs it against your agent and hands back the report.
 
 **Paid.** A workspace on a paid package adds the
 iFixAi-only inspections, audits every month, saved

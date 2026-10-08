@@ -26,8 +26,8 @@ password, and your agent's credential is stored server-side and never returned.
 ## Requirements
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
-  straight away: claim the free fast audit or redeem a promo code in the
-  dashboard (https://app.ifixai.ai/setup). A paid workspace on a
+  straight away: claim the free fast audit or redeem a promo code, right from
+  Claude. A paid workspace on a
   package adds the iFixAi-only inspections and audits every month.
 - An agent speaking OpenAI-shaped chat completions at a public HTTPS endpoint:
   private and loopback addresses are refused when dialled.
@@ -37,14 +37,15 @@ password, and your agent's credential is stored server-side and never returned.
 - **Package**: see which one you are on and this month's audits, ask for one
   or for a bigger one, see where the request stands.
 - **Inspections**: browse the roster and what each one checks.
-- **Fixtures**: turn a description of your agent into one, validate it, save it
-  against a connection and read it back, so a rerun needs no re-authoring.
+- **Simulation environments**: build one from your agent's repo or a description,
+  and save it against a connection, so a rerun needs no rebuilding.
 - **Connections**: register an agent endpoint, dial it once to test, list them.
-- **Runs**: preview, start, cancel, poll status, read the frozen report.
+- **Runs**: preview, start, stop, poll status, read the frozen report.
 - **Coverage**: which inspections your recent runs actually exercised.
 
 Only a completed `run-inspection` counts as one of the package's monthly audits.
-Cancelling yields no report and counts nothing.
+Stopping keeps a partial report of what finished, which counts as the audit;
+stopped before anything finished, it counts nothing.
 An access request is assigned by hand after we talk to you, so email
 support@ifixai.ai if it is urgent.
 
