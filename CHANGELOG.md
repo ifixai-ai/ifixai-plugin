@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.9 (2026-10-09)
+
+- The recap after a build names the files it read and what they didn't show.
+- A build without a connection saves nothing and says how to save it.
+- The docs page speaks in findings with proof, and lists only the tools that exist.
+
 ## 0.4.8 (2026-10-05)
 
 - Sandbox choices before a run when the agent's tools never reached it. The
