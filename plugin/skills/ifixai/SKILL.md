@@ -45,12 +45,12 @@ Last resort, only when there is no repo this session can read: say "I can't read
 
 ## 5. Recap
 
-Never paste the simulation environment. Saved, it comes back as a `summary`: recap that briefly, tagged from `citations`, naming the `assumed` values. Ask nothing, and never show inspection ids:
+It comes back as a `summary`, never the environment itself: recap that briefly, tagged from `fromFiles`, naming what `notInFiles` lists as assumed. Ask nothing, and never show inspection ids:
 
-> **Support bot** `[app/prompts/support.py:4]`: 3 roles, 12 tools, 4 rules.
-> Assumed, because the repo showed nothing: no audit log, no auth gateway.
+> **Support bot** (from `app/prompts/support.py`, `app/tools.py`): 3 roles, 12 tools, 4 rules.
+> Assumed, because the repo showed nothing: audit logging, risky actions.
 
-`build-simulation-env` saved it: later runs on that connection reuse it. Never re-send it with `save-simulation-env`.
+`build-simulation-env` saved it: later runs on that connection reuse it. No `saved` in the reply means nothing was kept: do what its `next` says.
 
 Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
 
