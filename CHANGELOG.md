@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.10 (2026-10-09)
+
+- The report read-out says when a verdict came from the setup, not the agent.
+
 ## 0.4.9 (2026-10-09)
 
 - The recap after a build names the files it read and what they didn't show.
