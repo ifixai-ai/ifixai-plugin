@@ -3,6 +3,13 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.11 (2026-10-10)
+
+- The agent's key never goes through chat: Claude Code sends it with a command, anywhere else the user pastes it on a one-use page.
+- The agent search skips `.env` files, and the key's name comes from the agent's code, never from `.env`.
+- A settings change keeps the agent's key. Only a refused key asks for a new one.
+- The agent search also skips env files with other names, like `prod.env` or `app.env.local`.
+
 ## 0.4.10 (2026-10-09)
 
 - The report read-out says when a verdict came from the setup, not the agent.

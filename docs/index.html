@@ -76,7 +76,7 @@
 <h2>Connect</h2>
 <p>Add the server URL in your client's connector settings:</p>
 <pre><code>https://mcp.ifixai.ai/mcp</code></pre>
-<p>Your client will open a browser window to sign in to iFixAi and ask you to approve access. That's standard OAuth 2.1. The connector never sees your password, and iFixAi never sees your agent's credentials after you store them.</p>
+<p>Your client will open a browser window to sign in to iFixAi and ask you to approve access. That's standard OAuth 2.1. The connector never sees your password. Your agent's key never goes through the chat: you paste it on a one-time link, or Claude Code sends it with the key command. It is stored server-side and never shown again.</p>
 
 <div class="panel">
   <p><strong>Not sure which plan you're on?</strong> Ask for <code>get-plan</code> first. Every paid-only tool tells a free caller plainly what it does and that a paid workspace unlocks it, rather than leaving you guessing.</p>
@@ -85,7 +85,7 @@
 <h2>The order things happen in</h2>
 <ol>
   <li><strong>Describe your agent.</strong> Paste its system prompt, or a plain description: roles and their limits, the tools it can call, the data it reads, the rules it must follow. This becomes its <em>simulation environment</em>: what the agent is supposed to do, which every inspection tests it against. Free.</li>
-  <li><strong>Register the endpoint.</strong> URL plus credential. Test it before you start a run.</li>
+  <li><strong>Register the endpoint.</strong> Just the URL. Its key goes through a one-time link or the key command, never the chat. Test it before you start a run.</li>
   <li><strong>Preview the run.</strong> See what is outside your package, how much of your selection can actually reach your agent, and the audits left this month.</li>
   <li><strong>Run.</strong> Returns immediately with a run id; inspections take minutes to tens of minutes.</li>
   <li><strong>Read the report.</strong> Findings with evidence.</li>
@@ -98,7 +98,7 @@
 <h2>Example prompts</h2>
 
 <h3>1. Set up and inspect an agent end to end</h3>
-<div class="prompt">"Here's my support agent's system prompt: [paste]. Build its iFixAi simulation environment from it, register the agent at https://api.example.com/v1/chat/completions with my bearer token, and preview a full audit."</div>
+<div class="prompt">"Here's my support agent's system prompt: [paste]. Build its iFixAi simulation environment from it, register the agent at https://api.example.com/v1/chat/completions, which takes a bearer token, and preview a full audit."</div>
 
 <h3>2. Check coverage before you run</h3>
 <div class="prompt">"What would a full audit of my agent cover, and how many of those inspections actually reach it?"</div>
@@ -125,7 +125,7 @@
     <tr><td>select-repo-files</td><td>Picks the repo files worth reading for a build, and how to upload them</td><td>no</td></tr>
     <tr><td>build-simulation-env</td><td>Turns your agent's repo or description into its simulation environment</td><td>no</td></tr>
     <tr><td>preview-run</td><td>What is outside your package, audits left, plus coverage warnings</td><td>no</td></tr>
-    <tr><td>create-connection</td><td>Registers your agent's endpoint and credential</td><td>no</td></tr>
+    <tr><td>create-connection</td><td>Registers your agent's endpoint. Its key comes by a one-time link or the key command, never the chat</td><td>no</td></tr>
     <tr><td>set-role-logins</td><td>Sets a test login per role, so messages sent as a role use its token</td><td>no</td></tr>
     <tr><td>wire-sandbox</td><td>A prompt for your coding agent that points your test copy's actions at our sandbox</td><td>no</td></tr>
     <tr><td>get-sandbox-address</td><td>The sandbox address behind the wire-sandbox Copy button, for the widget only</td><td>no</td></tr>
