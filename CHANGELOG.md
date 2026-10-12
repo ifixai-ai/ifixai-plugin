@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.12 (2026-10-12)
+
+- The key link and command last 30 minutes, up from 10.
+
 ## 0.4.11 (2026-10-10)
 
 - The agent's key never goes through chat: Claude Code sends it with a command, anywhere else the user pastes it on a one-use page.
