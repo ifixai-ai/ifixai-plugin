@@ -21,7 +21,8 @@ inspections, probes, judges and scoring all run server-side, on a package.
 ```
 
 Sign-in happens on first use, through your browser. The plugin never sees your
-password, and your agent's credential is stored server-side and never returned.
+password. Your agent's key goes through a one-time link or the key command, never
+the chat, and is stored server-side and never returned.
 
 ## Requirements
 
