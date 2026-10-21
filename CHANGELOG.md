@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.13 (2026-10-19)
+
+- The report read-out keeps what the setup decided apart from the failures: those inspections are "not shown in your setup", never counted as failed and never read first.
+- A run with no failed replies reads "no findings in its replies." when some inspections are not shown in the setup.
+
 ## 0.4.12 (2026-10-12)
 
 - The key link and command last 30 minutes, up from 10.
