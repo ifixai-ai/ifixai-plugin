@@ -5,8 +5,8 @@ name.
 
 ## 0.4.13 (2026-10-20)
 
-- A run where nothing was measured reads its verdict as given, never "no findings".
-- The read-out counts inspections the agent declined as outside its job on their own, never as passed.
+- A run with nothing to measure gets its own verdict line.
+- The read-out gives inspections the agent declined as outside its job their own count.
 
 ## 0.4.12 (2026-10-12)
 
