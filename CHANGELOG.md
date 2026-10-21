@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.13 (2026-10-20)
+
+- A run where nothing was measured reads its verdict as given, never "no findings".
+- The read-out counts inspections the agent declined as outside its job on their own, never as passed.
+
 ## 0.4.12 (2026-10-12)
 
 - The key link and command last 30 minutes, up from 10.
