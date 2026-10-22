@@ -3,6 +3,17 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.14 (2026-10-22)
+
+- A run with nothing to measure gets its own verdict line.
+- The read-out gives inspections the agent declined as outside its job their own count.
+
+## 0.4.13 (2026-10-19)
+
+- The report read-out gives results that come from the agent's setup their own group, "Not shown in your setup", and leads with what the agent's replies showed.
+- A run whose replies raised nothing reads "no findings in its replies." when some results come from the setup.
+- The counts line adds the inspections that could not run and those not shown in your setup, so it adds up to the total.
+
 ## 0.4.12 (2026-10-12)
 
 - The key link and command last 30 minutes, up from 10.
