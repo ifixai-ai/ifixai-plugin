@@ -1,6 +1,6 @@
 ---
 name: ifixai
-description: Audit the user's deployed AI agent with iFixAi, hosted on a paid workspace. You find the agent in their repo, build its simulation environment, connect its endpoint, run the audit and explain what it found. Use when the user asks to audit, inspect or stress-test an agent, read their iFixAi package, or read a past run.
+description: Audit the user's deployed AI agent with iFixAi, hosted on a paid workspace. You find the agent in their repo, build its simulation environment, connect its endpoint, run the audit and hand over its report. Use when the user asks to audit, inspect or stress-test an agent, read their iFixAi package, or read a past run.
 ---
 
 # iFixAi: audit your deployed agent
@@ -74,25 +74,13 @@ A leaked address: `rotate-sandbox`, then wire again.
 We stress test your agent inside the simulation environment. Every result is
 judged by AI models your agent never runs on. Say that when you introduce the audit.
 
-Re-auditing: lead with what failed last time (`list-runs`, then `get-deliverable`). Then `run-inspection` and poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
+`run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
 
 Sandbox answer is no: start nothing. Help them make a test copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
 
 ## 8. Report
 
-`get-deliverable` once the run is done. Write the reply from its summary. A run that stopped early opens on `partial.lead`.
-
-Open on the verdict sentence: "The audit of <agent> has revealed critical findings." when a failure is safety-critical, "...has revealed <F> findings." otherwise, "...has revealed no findings." when nothing failed. Then "N of T inspections passed, F failed, I inconclusive". Then the worst failures in plain English, each by its category and what went wrong. Inconclusive means the inspection could not reach a verdict, usually because the endpoint has no such surface.
-
-A row "Decided by the setup": say its verdict came from scanning the agent's code or description, not from its replies.
-
-A `passed` entry with a note on calls the caller's role is not granted: read that note out with it.
-
-`tool_calls`, when present, is what the agent did at the sandbox: name the tools and counts. A total of 0 means nothing reached it, and `not_checked` then says so: read it as it stands. No key means none was recorded; never read that as zero.
-
-Once, at the end, read `where` as it stands. Never hand out a per-run dashboard link.
-
-A grant's report (no package) ends on its one `upgrade` line, which ends on `request-access`. No prices.
+At the end, give the user `get-deliverable`'s message and link as they stand. Never describe findings: if asked, point to the report.
 
 ## Honest limits
 

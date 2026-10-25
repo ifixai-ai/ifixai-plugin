@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.13 (2026-10-25)
+
+- At the end of an audit, Claude gives one line on the result and a link to the full report, instead of reading the findings out.
+
 ## 0.4.12 (2026-10-12)
 
 - The key link and command last 30 minutes, up from 10.
