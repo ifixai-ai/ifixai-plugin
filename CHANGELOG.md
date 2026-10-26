@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.14 (2026-10-26)
+
+- Ask Claude what an audit found and it gives the findings with their proof, in the same order as the report.
+
 ## 0.4.13 (2026-10-25)
 
 - At the end of an audit, Claude gives one line on the result and a link to the full report, instead of reading the findings out.
