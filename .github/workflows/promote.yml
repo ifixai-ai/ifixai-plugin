@@ -119,9 +119,13 @@ jobs:
     env:
       SHA: ${{ needs.checks.outputs.sha }}
     steps:
+      # With PROMOTE_DEPLOY_KEY set, main is pushed with that deploy key: the
+      # one actor a ruleset locking main can let through (GitHub does not let
+      # the workflow token bypass a ruleset). Unset, the workflow token pushes.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          ssh-key: ${{ secrets.PROMOTE_DEPLOY_KEY }}
 
       - name: Fast-forward main
         run: |
