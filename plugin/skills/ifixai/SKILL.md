@@ -13,16 +13,16 @@ The demo, the package rules, the test-copy question and "findings, never fixes" 
 
 ## 0. Plan
 
-`get-plan`. The demo comes before it only for someone who asks what iFixAi is or makes no request: never when they ask to run their audit, or once `get-plan` shows a Fast audit left.
+`get-plan`. The demo comes before it only for someone who asks what iFixAi is or makes no request: never when they ask to run their audit, or once `get-plan` shows a Free audit left.
 - `free`: offer `claim-fast-audit`, or `redeem-code` when they have a code. Asked to run their free audit, claim it without asking. A refused claim says what to do: relay it as it stands.
 - `paid`: read back the package and the audits left this month with the reset date.
-- `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset. A Fast audit left: take the free audit's path below.
+- `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset. A Free audit left: take its path below.
 - A grant used up or expired: say so, then the `upgrade` line.
 - "Paused" or "being set up": relay what the tool said, point to https://ifixai.ai, stop.
 
 ## Free audit
 
-A Fast audit is the free audit, and its path is short: one question, then the audit.
+The free audit's path is short: one question, then the audit.
 - Find the agent as in 1. Several agents: ask which one.
 - Then ask this once, in place of the confirmation, the staging and test-copy questions and the go-ahead: "Your agent at <host> is a test copy, not production, and I'll start your free audit now. Go ahead?" A yes answers all of them. Anything else: start nothing, as in 7.
 - Then start. Connect it (3), build its simulation environment (4) and recap it in a line (5) with no role-login question, then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick: it runs as it is.

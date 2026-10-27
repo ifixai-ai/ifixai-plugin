@@ -8,6 +8,7 @@ name.
 - Asked to run their free audit, or holding one, the user goes straight to it: no demo first.
 - The free audit asks one question before it starts, the test copy and the go-ahead together, and runs as it is: no staging question, role logins, bundles or sandbox pick.
 - While it runs, Claude says only the problems found so far. It ends on what it found, how many are critical and a link to the free report, which opens the most serious ones.
+- It is called the free audit everywhere, as the dashboard calls it. The tool keeps its id, `claim-fast-audit`.
 
 ## 0.4.13 (2026-10-25)
 

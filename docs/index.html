@@ -63,14 +63,14 @@
 
 <h2>Two plans, one connector</h2>
 <ul>
-  <li><strong>Free.</strong> Signing in is enough. Claim the free fast audit or redeem a promo code from the chat with <code>claim-fast-audit</code> or <code>redeem-code</code>: iFixAi runs it against your deployed agent and hands back the report.</li>
+  <li><strong>Free.</strong> Signing in is enough. Claim the free audit or redeem a promo code from the chat with <code>claim-fast-audit</code> or <code>redeem-code</code>: iFixAi runs it against your deployed agent and hands back the report.</li>
   <li><strong>Paid.</strong> A workspace on a paid package unlocks more inspections, run by iFixAi against your deployed agent, with saved history and the frozen report. Ask for a package from the chat with <code>request-access</code>.</li>
 </ul>
 
 <h2>What you need first</h2>
 <ul>
   <li>An <strong>iFixAi sign-in</strong>. That alone puts you on the free plan.</li>
-  <li>For a run: the free fast audit, a promo code or a <strong>paid package</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before you start a run.</li>
+  <li>For a run: the free audit, a promo code or a <strong>paid package</strong>, and an agent reachable at a <strong>public HTTPS endpoint</strong> that speaks the OpenAI chat-completions shape. Anything resolving to a private or loopback address is refused by the egress guard when we dial it, so run <code>test-connection</code> before you start a run.</li>
 </ul>
 
 <h2>Connect</h2>
@@ -120,7 +120,7 @@
   <tbody>
     <tr><td>get-plan</td><td>Which plan this account is on, its package and this month's audits</td><td>no</td></tr>
     <tr><td>run-demo-audit</td><td>A demo audit of a made-up support bot; nothing runs</td><td>no</td></tr>
-    <tr><td>claim-fast-audit</td><td>Claims this account's one free fast audit</td><td>no</td></tr>
+    <tr><td>claim-fast-audit</td><td>Claims this account's one free audit</td><td>no</td></tr>
     <tr><td>redeem-code</td><td>Redeems a promo code you were given, one per account</td><td>no</td></tr>
     <tr><td>select-repo-files</td><td>Picks the repo files worth reading for a build, and how to upload them</td><td>no</td></tr>
     <tr><td>build-simulation-env</td><td>Turns your agent's repo or description into its simulation environment</td><td>no</td></tr>

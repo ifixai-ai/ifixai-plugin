@@ -27,7 +27,7 @@ the chat, and is stored server-side and never returned.
 ## Requirements
 
 - An iFixAi sign-in. That is the whole signup, and it puts you on the free plan
-  straight away: claim the free fast audit or redeem a promo code, right from
+  straight away: claim the free audit or redeem a promo code, right from
   Claude. A paid workspace on a
   package adds the iFixAi-only inspections and audits every month.
 - An agent speaking OpenAI-shaped chat completions at a public HTTPS endpoint:
