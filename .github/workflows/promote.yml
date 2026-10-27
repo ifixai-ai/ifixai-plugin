@@ -1,0 +1,137 @@
+name: Promote to production
+
+# Moves main to a commit that is already on staging and every pull request in
+# it is approved. Users get the plugin from main (the marketplace reads it), so
+# this is the release. Ship it after the MCP server it talks to is live.
+# The whole release process: ifixai-dashboard docs/release/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Staging commit to ship (blank: staging's latest)"
+        required: false
+        default: ""
+      confirm:
+        description: 'Type "promote" to confirm'
+        required: true
+      allow_unreviewed:
+        description: "Ship even if a pull request in it has no approval"
+        type: boolean
+        default: false
+
+concurrency:
+  group: promote-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Confirmed by a release manager
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          ACTOR: ${{ github.actor }}
+          MANAGERS: ${{ vars.RELEASE_MANAGERS }}
+        run: |
+          [ "$CONFIRM" = "promote" ] || { echo "::error::Type promote in the confirm box."; exit 1; }
+          case ",${MANAGERS// /}," in
+            *",$ACTOR,"*) ;;
+            *) echo "::error::$ACTOR is not in the RELEASE_MANAGERS repository variable."; exit 1 ;;
+          esac
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: The commit is on staging and main can fast-forward to it
+        id: commit
+        env:
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main staging
+          sha=$(git rev-parse --verify "${INPUT_SHA:-origin/staging}^{commit}")
+          git merge-base --is-ancestor "$sha" origin/staging || { echo "::error::$sha is not on staging."; exit 1; }
+          git merge-base --is-ancestor origin/main "$sha" || {
+            echo "::error::main has commits that $sha lacks. Merge main into staging first."; exit 1; }
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Release $(git rev-parse --short "$sha")"
+            echo
+            git log --no-merges --format='- %h %s (%an)' origin/main.."$sha"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Every pull request in the release is approved
+        env:
+          SHA: ${{ steps.commit.outputs.sha }}
+          ALLOW: ${{ inputs.allow_unreviewed }}
+        run: |
+          set -euo pipefail
+          bad=0
+          declare -A prs=()
+          for c in $(git rev-list --no-merges "origin/main..$SHA"); do
+            found=$(gh api "repos/$GITHUB_REPOSITORY/commits/$c/pulls" --jq '.[].number')
+            if [ -z "$found" ]; then
+              echo "::error::$(git log -1 --format='%h %s' "$c") is not in any pull request."
+              bad=1
+            fi
+            for p in $found; do prs[$p]=1; done
+          done
+          echo "#### Reviews" >> "$GITHUB_STEP_SUMMARY"
+          for p in "${!prs[@]}"; do
+            IFS=$'\t' read -r author title < <(gh api "repos/$GITHUB_REPOSITORY/pulls/$p" --jq '[.user.login, .title] | @tsv')
+            verdict=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$p/reviews" \
+              --jq ".[] | select(.user.login != \"$author\") | select(.state == \"APPROVED\" or .state == \"CHANGES_REQUESTED\" or .state == \"DISMISSED\") | [.user.login, .state, .submitted_at] | @tsv" \
+              | sort -t $'\t' -k3 \
+              | awk -F'\t' '{ last[$1] = $2 } END { a = 0; c = 0; for (u in last) { if (last[u] == "APPROVED") a++; if (last[u] == "CHANGES_REQUESTED") c++ } print (c ? "changes requested" : (a ? "approved" : "not reviewed")) }')
+            echo "- #$p $title: $verdict" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$verdict" != approved ]; then
+              echo "::error::#$p ($title) is $verdict."
+              bad=1
+            fi
+          done
+          if [ "$bad" = 1 ] && [ "$ALLOW" = true ]; then
+            echo "::warning::Shipping with unreviewed work: allow_unreviewed was ticked by ${{ github.actor }}."
+            echo "**Shipped without full review, by ${{ github.actor }}.**" >> "$GITHUB_STEP_SUMMARY"
+            bad=0
+          fi
+          exit $bad
+
+  ship:
+    name: Ship
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SHA: ${{ needs.checks.outputs.sha }}
+    steps:
+      # With PROMOTE_DEPLOY_KEY set, main is pushed with that deploy key: the
+      # one actor a ruleset locking main can let through (GitHub does not let
+      # the workflow token bypass a ruleset). Unset, the workflow token pushes.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.PROMOTE_DEPLOY_KEY }}
+
+      - name: Fast-forward main
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git merge-base --is-ancestor origin/main "$SHA" || { echo "::error::main moved since the checks ran. Run Promote again."; exit 1; }
+          # A plain push: git refuses anything but a fast-forward.
+          git push origin "$SHA:refs/heads/main"
+          echo "main is now ${SHA:0:7}: /plugin marketplace update ifixai picks it up." >> "$GITHUB_STEP_SUMMARY"
