@@ -133,10 +133,9 @@
     <tr><td>test-connection</td><td>Sends your agent two test messages, plus one per role login, to check it answers</td><td>no</td></tr>
     <tr><td>list-connections</td><td>Endpoints registered in your workspace</td><td>no</td></tr>
     <tr><td>run-inspection</td><td>Starts a hosted run, returns a run id immediately</td><td><strong>paid, once it completes</strong></td></tr>
-    <tr><td>get-run</td><td>Status, and how many inspections have passed and failed so far</td><td>no</td></tr>
+    <tr><td>get-run</td><td>Status, and how many inspections have passed and failed so far; once it has a report, its outcome and a link to it</td><td>no</td></tr>
     <tr><td>list-runs</td><td>Your runs, newest first</td><td>no</td></tr>
-    <tr><td>get-deliverable</td><td>The frozen report for a finished run</td><td>no</td></tr>
-    <tr><td>get-deliverable-payload</td><td>The same report for the report widget to show, not for the chat</td><td>no</td></tr>
+    <tr><td>get-deliverable</td><td>A finished run's outcome and a link to its full report in the dashboard</td><td>no</td></tr>
     <tr><td>request-access</td><td>Asks for a package, or a bigger one; we assign it by hand</td><td>no</td></tr>
     <tr><td>stop-run</td><td>Stops a run and keeps what finished as a partial report</td><td>once anything finished</td></tr>
     <tr><td>search</td><td>Finds your runs by run id, agent name or status</td><td>no</td></tr>
