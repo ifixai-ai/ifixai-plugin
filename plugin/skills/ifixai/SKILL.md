@@ -80,7 +80,7 @@ Sandbox answer is no: start nothing. Help them make a test copy with fake data. 
 
 ## 8. Report
 
-At the end, give the user `get-deliverable`'s message and link as they stand. Never describe findings: if asked, point to the report.
+At the end, give the user `get-deliverable`'s message and link as they stand. Describe findings only when the user asks: then call `get-findings` and keep to its findings and proof, in its order, with no count, score or fix.
 
 ## Honest limits
 
