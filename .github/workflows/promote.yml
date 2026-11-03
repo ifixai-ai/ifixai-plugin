@@ -104,8 +104,8 @@ jobs:
             fi
           done
           if [ "$bad" = 1 ] && [ "$ALLOW" = true ]; then
-            echo "::warning::Shipping with unreviewed work: allow_unreviewed was ticked by ${{ github.actor }}."
-            echo "**Shipped without full review, by ${{ github.actor }}.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Shipping with unreviewed work: allow_unreviewed was ticked by $GITHUB_ACTOR."
+            echo "**Shipped without full review, by $GITHUB_ACTOR.**" >> "$GITHUB_STEP_SUMMARY"
             bad=0
           fi
           exit $bad
