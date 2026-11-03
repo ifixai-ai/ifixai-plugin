@@ -7,7 +7,7 @@ description: Audit the user's deployed AI agent with iFixAi, hosted on a paid wo
 
 Three stages: **Connect** the agent, build its **Simulation environment** (what the agent is supposed to do, which every inspection is judged against), run the **Audit**. You are the operator, not the thing being tested.
 
-Every audit needs a reachable HTTP endpoint. No endpoint, no audit: say so and stop.
+Every audit needs an HTTP endpoint iFixAi can reach. An agent that runs only on this machine goes out through a quick tunnel, `cloudflared tunnel --url http://localhost:<port>`: `test-connection` says what to do with the address it prints.
 
 The demo, the package rules, the test-copy question and "findings, never fixes" are in the server instructions. They are not repeated here.
 
@@ -27,7 +27,7 @@ grep -rniE "IFIXAI_HTTP_ENDPOINT|OPENAI_BASE_URL|ANTHROPIC_BASE_URL|AGENT_URL|ba
 ls .claude/agents/ agents/ 2>/dev/null; grep -rlniE "system_prompt|SystemMessage|Agent\(|create_agent|crewai|langgraph|autogen" --include="*.py" --include="*.ts" --include="*.yaml" .
 ```
 
-Accept only a URL the repo states as the agent's own chat API (`POST /v1/chat/completions`). An MCP `url` is a tool the agent calls, not its endpoint. Nothing found: say what you searched and ask for the URL.
+Accept a URL the repo states as the agent's own chat API, in any request format: when it isn't OpenAI's, give `create-connection` the `requestBody` and `replyPath` the code shows. An MCP `url` is a tool the agent calls, not its endpoint. Nothing found: say what you searched and ask for the URL.
 
 ## 2. Confirm it
 
@@ -76,7 +76,7 @@ judged by AI models your agent never runs on. Say that when you introduce the au
 
 `run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
 
-Sandbox answer is no: start nothing. Help them make a test copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
+Sandbox answer is no: start nothing. Help them make a test copy with fake data; a local one goes out through the tunnel, with a key on it.
 
 ## 8. Report
 

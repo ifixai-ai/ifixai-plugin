@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.15 (2026-11-03)
+
+- Agents with their own request format connect: Claude gives iFixAi the request body and where the reply sits, read from the agent's code.
+- An agent that only runs on your laptop is no longer a dead end: Claude gives you the tunnel command for its port.
+
 ## 0.4.14 (2026-10-26)
 
 - Ask Claude what an audit found and it gives the findings with their proof, in the same order as the report.
