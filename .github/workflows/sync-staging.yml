@@ -1,0 +1,50 @@
+name: Sync staging
+
+# staging must always contain main, or Promote can't fast-forward main to it.
+# A promote moves main to a staging commit, so normally there is nothing to do.
+# This catches the other case: something merged straight into main (a hotfix),
+# which is then merged into staging so the next release carries it too.
+# The whole release process: ifixai-dashboard docs/release/README.md.
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: sync-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Merge main into staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main staging
+          if git merge-base --is-ancestor origin/main origin/staging; then
+            echo "staging already contains main."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B staging origin/staging
+          if ! git merge --no-edit origin/main; then
+            git merge --abort
+            gh issue create \
+              --title "main could not be merged into staging" \
+              --body "A commit on main ($(git rev-parse --short origin/main)) conflicts with staging. Merge main into staging by hand and resolve the conflict, or Promote will refuse to run."
+            echo "::error::main conflicts with staging. An issue was opened."
+            exit 1
+          fi
+          git push origin staging
