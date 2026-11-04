@@ -7,6 +7,7 @@ name.
 
 - Agents with their own request format connect: Claude gives iFixAi the request body and where the reply sits, read from the agent's code.
 - An agent that only runs on your laptop is no longer a dead end: Claude gives you the tunnel command for its port.
+- A first audit asks one question at most, what the agent is for and only when its code doesn't say, and one yes. The sandbox and role logins come after the first report.
 
 ## 0.4.14 (2026-10-26)
 

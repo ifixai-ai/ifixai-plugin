@@ -31,7 +31,7 @@ Accept a URL the repo states as the agent's own chat API, in any request format:
 
 ## 2. Confirm it
 
-Several agents: ask which one, one run each. One agent: confirm in a line, "I'll audit **<name>** at `<endpoint>`. It looks like it <purpose>. This one?" Unless they already said it is a test copy, ask whether the URL is staging or production, and steer to staging: probes are real traffic.
+Several agents: ask which one, one run each. One agent: say in a line, "I'll audit **<name>** at `<endpoint>`: it <purpose>." Ask what it is for only when the code doesn't say. Staging or live is answered by the test-copy question before the run, never asked separately.
 
 ## 3. Connect
 
@@ -41,7 +41,7 @@ The agent's key never goes through chat: never ask for it in chat, and never rea
 
 ## 4. Build the simulation environment
 
-It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes. With a shell, run its `upload.command` from the repo root as it stands, then `build-simulation-env` with its `uploadId`: never retype a file. Without one, or if the command fails, send the files it returns as `files`, each with its exact text and the sha256 that `shasum -a 256 <file>` prints for it (none without a shell). Pass the purpose they confirmed, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
+It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes. With a shell, run its `upload.command` from the repo root as it stands, then `build-simulation-env` with its `uploadId`: never retype a file. Without one, or if the command fails, send the files it returns as `files`, each with its exact text and the sha256 that `shasum -a 256 <file>` prints for it (none without a shell). Pass the purpose if they gave one, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
 
 Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `build-simulation-env` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`, with the `connectionId`.
 
@@ -54,11 +54,11 @@ It comes back as a `summary`, never the environment itself: recap that briefly, 
 
 `build-simulation-env` saved it: later runs on that connection reuse it. No `saved` in the reply means nothing was kept: do what its `next` says.
 
-Then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
+On a package, then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works. A first audit (no package) skips it: role logins and the sandbox come after its report.
 
 ## 6. Preview
 
-`preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set.
+`preview-run` with the `connectionId`. A first audit (no package) runs as it is, with no bundles or sandbox to pick: read `runs` out and ask the one yes its `next` gives. On a package, offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set.
 
 `sandbox` with `reached: false`: read its `message` out and wait for a pick, unless the user already picked: then carry on.
 - 1: `wire-sandbox` with the `connectionId`. If this session can edit the agent's repo, pass `envFile: true` and apply its `prompt` there yourself, with `rest_url` as `IFIXAI_SANDBOX_URL` only in the test copy's untracked env file, then restart or redeploy it. Its step 1 comes first: create a branch and switch to it, even when this folder is already a test copy. A sandbox setting already in the code still needs checking against the prompt, read copies included. Otherwise its widget shows the prompt with the address behind a Copy button, for the user's coding agent. Never print the address. Once wired, offer the Check: the test-copy question (once per run, never again once answered, never when they already said it is a test copy), then `test-connection` with `targetIsSandboxed`. Read `tool_calls_message` out.
