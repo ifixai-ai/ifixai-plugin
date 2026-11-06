@@ -7,7 +7,7 @@ description: Audit the user's deployed AI agent with iFixAi, hosted by iFixAi, f
 
 Three stages: **Connect** the agent, build its **Simulation environment** (what the agent is supposed to do, which every inspection is judged against), run the **Audit**. You are the operator, not the thing being tested.
 
-Every audit needs a reachable HTTP endpoint. No endpoint, no audit: say so and stop.
+Every audit needs an HTTP endpoint iFixAi can reach. An agent that runs only on this machine runs in a locked Docker container by default: `lock-agent` gives the files and steps, a tunnel included. Only if the user insists on skipping Docker does it go out through a bare quick tunnel, `cloudflared tunnel --url http://localhost:<port>`: `test-connection` says what to do with the address it prints.
 
 The demo, the package rules, the test-copy question and "findings, never fixes" are in the server instructions. They are not repeated here.
 
@@ -36,21 +36,21 @@ grep -rniE "IFIXAI_HTTP_ENDPOINT|OPENAI_BASE_URL|ANTHROPIC_BASE_URL|AGENT_URL|ba
 ls .claude/agents/ agents/ 2>/dev/null; grep -rlniE "system_prompt|SystemMessage|Agent\(|create_agent|crewai|langgraph|autogen" --include="*.py" --include="*.ts" --include="*.yaml" .
 ```
 
-Accept only a URL the repo states as the agent's own chat API (`POST /v1/chat/completions`). An MCP `url` is a tool the agent calls, not its endpoint. Nothing found: say what you searched and ask for the URL.
+Accept a URL the repo states as the agent's own chat API, in any request format: when it isn't OpenAI's, give `create-connection` the `requestBody` and `replyPath` the code shows. An MCP `url` is a tool the agent calls, not its endpoint. Nothing found: say what you searched and ask for the URL.
 
 ## 2. Confirm it
 
-Several agents: ask which one, one run each. One agent: confirm in a line, "I'll audit **<name>** at `<endpoint>`. It looks like it <purpose>. This one?" Unless they already said it is a test copy, ask whether the URL is staging or production, and steer to staging: probes are real traffic. A free audit asks only its one question instead.
+Several agents: ask which one, one run each. One agent: say in a line, "I'll audit **<name>** at `<endpoint>`: it <purpose>." Ask what it is for only when the code doesn't say. Staging or live is answered by the test-copy question before the run, never asked separately.
 
 ## 3. Connect
 
 `list-connections`, else `create-connection` then `test-connection`. A row with `saved_environment` already has its simulation environment: skip 4 and 5, ask nothing. Read failures back plainly: an unreachable host, a refused key and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
 
-The agent's key never goes through chat: never ask for it in chat, and never read, list, print or cat a `.env` file, not even its names. An agent with a key is saved without it, and the reply's `key` gives it two ways. In Claude Code, or any client with a shell, run the key command from the agent's repo, with `AGENT_API_KEY` swapped for the name of the env var that holds the key: take that name from the agent's code, like `os.environ["AGENT_API_KEY"]` or `process.env.AGENT_API_KEY`, else ask the user for the name, never the value. The command reads that one variable itself. Anywhere else, give the user the key link to paste the key on a page, and test once they say it is done. Waiting for the key, `test-connection` gives back the link and command already handed out, which still work until used or 30 minutes are up, then new ones. For a refused key, call `create-connection` again with the `connectionId`, the same setup and `newKey: true`: its reply has a new link and command. Any other change keeps the stored key, so never give it again.
+The agent's key never goes through chat: never ask for it in chat, and never read, list, print or cat a `.env` file, not even its names (`lock-agent`'s hosts-only command is the one exception). An agent with a key is saved without it, and the reply's `key` gives it two ways. In Claude Code, or any client with a shell, run the key command from the agent's repo, with `AGENT_API_KEY` swapped for the name of the env var that holds the key: take that name from the agent's code, like `os.environ["AGENT_API_KEY"]` or `process.env.AGENT_API_KEY`, else ask the user for the name, never the value. The command reads that one variable itself. Anywhere else, give the user the key link to paste the key on a page, and test once they say it is done. Waiting for the key, `test-connection` gives back the link and command already handed out, which still work until used or 30 minutes are up, then new ones. For a refused key, call `create-connection` again with the `connectionId`, the same setup and `newKey: true`: its reply has a new link and command. Any other change keeps the stored key, so never give it again.
 
 ## 4. Build the simulation environment
 
-It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes. With a shell, run its `upload.command` from the repo root as it stands, then `build-simulation-env` with its `uploadId`: never retype a file. Without one, or if the command fails, send the files it returns as `files`, each with its exact text and the sha256 that `shasum -a 256 <file>` prints for it (none without a shell). Pass the purpose they confirmed, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
+It is built from the whole agent repo. Say the selected files, system prompt included, go to iFixAi, and let them redact. Then `select-repo-files` with `git ls-files` and sizes. With a shell, run its `upload.command` from the repo root as it stands, then `build-simulation-env` with its `uploadId`: never retype a file. Without one, or if the command fails, send the files it returns as `files`, each with its exact text and the sha256 that `shasum -a 256 <file>` prints for it (none without a shell). Pass the purpose if they gave one, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: ask which. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
 
 Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `build-simulation-env` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`, with the `connectionId`.
 
@@ -63,11 +63,11 @@ It comes back as a `summary`, never the environment itself: recap that briefly, 
 
 `build-simulation-env` saved it: later runs on that connection reuse it. No `saved` in the reply means nothing was kept: do what its `next` says.
 
-Then ask once, except on a free audit: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works.
+On a package, then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works. A first audit (no package) skips it: role logins and the sandbox come after its report.
 
 ## 6. Preview
 
-`preview-run` with the `connectionId`. Offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set. A free audit's preview has nothing to offer or count: read nothing out of it.
+`preview-run` with the `connectionId`. A free audit's preview has nothing to offer or count: read nothing out of it, and ask its one question only if it is not answered yet. Another first audit (no package) runs as it is, with no bundles or sandbox to pick: read `runs` out and ask the one yes its `next` gives. On a package, offer the whole package first, then one or two whole bundles, each as "<N> inspections across <C> categories" from the preview. Read out `coverage.warning` when set.
 
 `sandbox` with `reached: false`: read its `message` out and wait for a pick, unless the user already picked: then carry on.
 - 1: `wire-sandbox` with the `connectionId`. If this session can edit the agent's repo, pass `envFile: true` and apply its `prompt` there yourself, with `rest_url` as `IFIXAI_SANDBOX_URL` only in the test copy's untracked env file, then restart or redeploy it. Its step 1 comes first: create a branch and switch to it, even when this folder is already a test copy. A sandbox setting already in the code still needs checking against the prompt, read copies included. Otherwise its widget shows the prompt with the address behind a Copy button, for the user's coding agent. Never print the address. Once wired, offer the Check: the test-copy question (once per run, never again once answered, never when they already said it is a test copy), then `test-connection` with `targetIsSandboxed`. Read `tool_calls_message` out.
@@ -85,7 +85,7 @@ judged by AI models your agent never runs on. Say that when you introduce the au
 
 `run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. A free audit's progress has only `failed`: "<n> problems found so far", nothing else. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles, or a free audit's problems found so far. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
 
-Sandbox answer is no: start nothing. Help them make a test copy with fake data. A local copy goes out through `cloudflared tunnel --url http://localhost:<port>` plus an auth header.
+Sandbox answer is no: start nothing. Help them make a test copy with fake data; a local one goes out through the tunnel, with a key on it.
 
 ## 8. Report
 
