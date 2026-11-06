@@ -3,6 +3,13 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.16 (2026-11-05)
+
+- Agents with their own request format connect: Claude gives iFixAi the request body and where the reply sits, read from the agent's code.
+- An agent that only runs on your laptop is no longer a dead end: Claude gives you the tunnel command for its port.
+- A first audit asks one question at most, what the agent is for and only when its code doesn't say, and one yes. The sandbox and role logins come after the first report.
+- An agent on your laptop runs in a locked Docker container for the audit by default, reaching only its model, iFixAi's sandbox and what you approve. Claude keeps `.ifixai/SETUP.md` with what it set up and how to undo it.
+
 ## 0.4.15 (2026-11-03)
 
 - Asked to run their free audit, or holding one, the user goes straight to it: no demo first.
