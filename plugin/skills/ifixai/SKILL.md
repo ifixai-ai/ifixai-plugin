@@ -26,7 +26,7 @@ The free audit's path is short: one question, then the audit.
 - Find the agent as in 1. Several agents: ask which one.
 - Then ask this once, in place of the confirmation, the staging and test-copy questions and the go-ahead: "Your agent at <host> is a test copy, not production, and I'll start your free audit now. Go ahead?" A yes answers all of them. Anything else: start nothing, as in 7.
 - Then start. Connect it (3), build its simulation environment (4) and recap it in a line (5) with no role-login question, then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick: it runs as it is.
-- While it runs, say only the problems found so far: "<n> problems found so far", from `progress.failed`. Never how many inspections it runs or has run.
+- While it runs, say each line in `get-run`'s `say` as it stands, like "Found a critical problem in Authority and human control.". Never how many inspections it runs or has run, never what a problem is.
 - At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> problems, <c> of them critical. Your free report opens the <s> most serious: <link>", and nothing after it.
 
 ## 1. Find the agent
