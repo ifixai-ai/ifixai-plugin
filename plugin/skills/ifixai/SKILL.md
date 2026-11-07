@@ -26,8 +26,8 @@ The free audit's path is short: one question, then the audit.
 - Find the agent as in 1. Several agents: ask which one.
 - Then ask this once, in place of the confirmation, the staging and test-copy questions and the go-ahead: "Your agent at <host> is a test copy, not production, and I'll start your free audit now. Go ahead?" A yes answers all of them. Anything else: start nothing, as in 7.
 - Then start. Connect it (3), build its simulation environment (4) and recap it in a line (5) with no role-login question, then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick: it runs as it is.
-- While it runs, say each line in `get-run`'s `say` as it stands, like "Found a critical problem in Authority and human control.". Never how many inspections it runs or has run, never what a problem is.
-- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> problems, <c> of them critical. Your free report opens the <s> most serious: <link>", and nothing after it.
+- While it runs, say each line in `get-run`'s `say` as it stands, like "Found a critical gap in Fabrication.". Never how many inspections it runs or has run, never what a gap is.
+- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical. Your free report opens the <s> most critical: <link>", and nothing after it.
 
 ## 1. Find the agent
 
@@ -83,7 +83,7 @@ A leaked address: `rotate-sandbox`, then wire again.
 We stress test your agent inside the simulation environment. Every result is
 judged by AI models your agent never runs on. Say that when you introduce the audit.
 
-`run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. A free audit's progress has only `failed`: "<n> problems found so far", nothing else. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles, or a free audit's problems found so far. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
+`run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. A free audit's progress has only `failed`: "<n> gaps found so far", nothing else. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles, or a free audit's gaps found so far. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
 
 Sandbox answer is no: start nothing. Help them make a test copy with fake data; a local one goes out through the tunnel, with a key on it.
 
