@@ -3,6 +3,10 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.18 (2026-11-08)
+
+- No demo audit: a new user starts with their plan and their own audit.
+
 ## 0.4.17 (2026-11-06)
 
 - While your free audit runs, Claude says each gap the moment it's found: how serious it is and its category, like fabrication or manipulation, never what it is.

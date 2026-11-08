@@ -9,11 +9,11 @@ Three stages: **Connect** the agent, build its **Simulation environment** (what 
 
 Every audit needs an HTTP endpoint iFixAi can reach. An agent that runs only on this machine runs in a locked Docker container by default: `lock-agent` gives the files and steps, a tunnel included. Only if the user insists on skipping Docker does it go out through a bare quick tunnel, `cloudflared tunnel --url http://localhost:<port>`: `test-connection` says what to do with the address it prints.
 
-The demo, the package rules, the test-copy question and "findings, never fixes" are in the server instructions. They are not repeated here.
+The package rules, the test-copy question and "findings, never fixes" are in the server instructions. They are not repeated here.
 
 ## 0. Plan
 
-`get-plan`. The demo comes before it only for someone who asks what iFixAi is or makes no request: never when they ask to run their audit, or once `get-plan` shows a Free audit left.
+`get-plan`.
 - `free`: offer `claim-fast-audit`, or `redeem-code` when they have a code. Asked to run their free audit, claim it without asking. A refused claim says what to do: relay it as it stands.
 - `paid`: read back the package and the audits left this month with the reset date.
 - `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset. A Free audit left: take its path below.
