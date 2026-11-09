@@ -1,5 +1,5 @@
 {
-  "description": "Lets iFixAi's own steps run without a permission prompt: iFixAi's tools, and only the exact commands they hand out. Anything else asks as usual.",
+  "description": "Lets iFixAi's own steps run without a permission prompt: iFixAi's tools, the exact commands they hand out and, only after lock-agent in the same session, the locked container's own steps. Anything else asks as usual.",
   "hooks": {
     "PreToolUse": [
       {
@@ -13,7 +13,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Write|Edit",
         "hooks": [
           {
             "type": "command",

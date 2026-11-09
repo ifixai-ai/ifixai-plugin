@@ -1,20 +1,23 @@
-// PreToolUse hook for Bash: allows only iFixAi's own commands, so an audit runs without a permission prompt for
-// each of them. Any other command gets no answer from here and asks as usual.
+// PreToolUse hook for Bash, Write and Edit: allows only iFixAi's own steps, so an audit runs without a permission
+// prompt for each of them. Anything else gets no answer from here and asks as usual.
 //
 // Allowed, exactly as written, nothing added or changed:
 // - a command one of iFixAi's tools handed out in this session (the upload of the selected files, the key command);
-// - the locked container's own Docker commands, as lock-agent's steps give them.
+// - once lock-agent answered in this session: the locked container's own commands, as lock-agent's steps give them,
+//   and writing or editing files inside .ifixai/ in the working folder.
 // No Node, an error, or anything unexpected: no answer, so Claude Code asks as it always does.
-import { closeSync, openSync, readSync, statSync } from "node:fs";
+import { closeSync, lstatSync, openSync, readSync, realpathSync, statSync } from "node:fs";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 /** iFixAi's tools, as Claude Code names them: this plugin's server, the claude.ai connector ("iFixAi"), or one
  *  added by hand as "ifixai". */
 const OUR_TOOL = /^mcp__(?:plugin_ifixai_ifixai|claude_ai_ifixai|ifixai)__/i;
+const LOCK_AGENT = new RegExp(`${OUR_TOOL.source}lock-agent$`, "i");
 
-/** lock-agent's Docker commands. `docker-compose` is the same with the older binary. */
+/** lock-agent's steps: its branch and its Docker commands. `docker-compose` is the same with the older binary. */
 const COMPOSE = "-f .ifixai/compose.yaml";
 const KIT_COMMANDS = new Set(
-  ["docker info"].concat(
+  ["docker info", "git switch -c ifixai-audit", "git checkout -b ifixai-audit"].concat(
     ...["docker compose", "docker-compose"].map((dc) => [
       `${dc} ${COMPOSE} up -d --build`,
       `${dc} ${COMPOSE} down -v`,
@@ -84,10 +87,12 @@ function collect(content, out) {
   if (content && typeof content === "object" && !Array.isArray(content)) commandsIn(content, out);
 }
 
-/** The commands iFixAi's tools handed out in this transcript. */
-function handedOut(transcriptPath) {
+/** The commands iFixAi's tools handed out in this transcript, and whether lock-agent answered without an error. */
+function readSession(transcriptPath) {
   const ours = new Set();
+  const lockCalls = new Set();
   const out = new Set();
+  let locked = false;
   for (const line of readTail(transcriptPath).split("\n")) {
     if (!line.trim()) continue;
     let entry;
@@ -100,14 +105,51 @@ function handedOut(transcriptPath) {
     const content = entry?.message?.content;
     if (!Array.isArray(content)) continue;
     for (const block of content) {
-      if (block?.type === "tool_use" && OUR_TOOL.test(String(block.name ?? ""))) ours.add(block.id);
+      if (block?.type === "tool_use" && OUR_TOOL.test(String(block.name ?? ""))) {
+        ours.add(block.id);
+        if (LOCK_AGENT.test(String(block.name))) lockCalls.add(block.id);
+      }
       if (block?.type === "tool_result" && ours.has(block.tool_use_id)) {
         collect(block.content, out);
         if (entry.toolUseResult !== undefined) collect(entry.toolUseResult, out);
+        if (lockCalls.has(block.tool_use_id) && block.is_error !== true) locked = true;
       }
     }
   }
-  return out;
+  return { commands: out, locked };
+}
+
+/** Whether a file path lands inside <cwd>/.ifixai/ once resolved, through any links: the kit's own folder. */
+function inKitFolder(filePath, cwd) {
+  if (typeof filePath !== "string" || !filePath || typeof cwd !== "string" || !isAbsolute(cwd)) return false;
+  const folder = join(realpathSync(cwd), ".ifixai");
+  // the deepest part that exists is read through its links; the parts after it don't exist, so can't be links
+  let existing = resolve(cwd, filePath);
+  const rest = [];
+  for (;;) {
+    try {
+      const stat = lstatSync(existing);
+      // a second name for a file elsewhere: a write here would change that file too
+      if (!rest.length && stat.isFile() && stat.nlink > 1) return false;
+      break;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    const parent = dirname(existing);
+    if (parent === existing) return false;
+    rest.unshift(basename(existing));
+    existing = parent;
+  }
+  let real;
+  try {
+    real = join(realpathSync(existing), ...rest);
+  } catch (error) {
+    // a link to nothing
+    if (error.code === "ENOENT") return false;
+    throw error;
+  }
+  const rel = relative(folder, real);
+  return rel !== "" && rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
 }
 
 function allow(reason) {
@@ -116,12 +158,18 @@ function allow(reason) {
 
 function main() {
   const input = JSON.parse(readStdin() || "{}");
+  if (typeof input.transcript_path !== "string" || !input.transcript_path) return;
+  if (input.tool_name === "Write" || input.tool_name === "Edit") {
+    // the path first: it is cheap, and most writes are elsewhere
+    if (inKitFolder(input.tool_input?.file_path, input.cwd) && readSession(input.transcript_path).locked) allow("iFixAi's locked container");
+    return;
+  }
   if (input.tool_name !== "Bash") return;
   const command = String(input.tool_input?.command ?? "").trim();
   if (!command) return;
-  if (KIT_COMMANDS.has(command)) return allow("iFixAi's locked container");
-  if (typeof input.transcript_path !== "string" || !input.transcript_path) return;
-  if (handedOut(input.transcript_path).has(command)) allow("A command iFixAi handed out");
+  const session = readSession(input.transcript_path);
+  if (session.locked && KIT_COMMANDS.has(command)) return allow("iFixAi's locked container");
+  if (session.commands.has(command)) allow("A command iFixAi handed out");
 }
 
 try {

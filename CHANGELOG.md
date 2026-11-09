@@ -7,7 +7,7 @@ name.
 
 - "Audit my agent with iFixAi." is enough: with your agent's code in the folder, Claude asks nothing and reads the test copy, the key's name, role logins and the sandbox from the code.
 - A quieter audit: the step list shows only when a step changes, each gap category once, and the report link once. In Claude Code the running audit is one line that updates itself.
-- iFixAi's own steps run without a permission prompt: its tools, and only the exact commands they hand out. Anything else asks as usual.
+- iFixAi's own steps run without a permission prompt: its tools, and only the exact commands they hand out. The locked container's steps (its branch, its Docker commands and its files, all written inside `.ifixai/`) are allowed only after `lock-agent` in the same session. Anything else asks as usual.
 
 ## 0.4.18 (2026-11-08)
 
