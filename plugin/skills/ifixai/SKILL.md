@@ -25,8 +25,8 @@ The package rules, the test-copy question and "findings, never fixes" are in the
 The free audit's path is short: one question, then the audit.
 - Find the agent as in 1. Several agents: ask which one.
 - Then ask this once, in place of the confirmation, the staging and test-copy questions and the go-ahead: "Your agent at <host> is a test copy, not production, and I'll start your free audit now. Go ahead?" A yes answers all of them. Anything else: start nothing, as in 7.
-- Then start. Connect it (3), build its simulation environment (4) and recap it in a line (5) with no role-login question, then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick: it runs as it is.
-- While it runs, say each line in `get-run`'s `say` as it stands, like "Found a critical gap in Fabrication.". Never how many inspections it runs or has run, never what a gap is.
+- Then start. Connect it (3), build its simulation environment (4) with no role-login question, then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick: it runs as it is.
+- While it runs, say only the gap lines a reply's `say` gives, like "Found a critical gap in Fabrication.", each once. Never how many inspections it runs or has run, never what a gap is.
 - At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical. Your free report opens the <s> most critical: <link>", and nothing after it.
 
 ## 1. Find the agent
@@ -54,14 +54,9 @@ It is built from the whole agent repo. Say the selected files, system prompt inc
 
 Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `build-simulation-env` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`, with the `connectionId`.
 
-## 5. Recap
+## 5. Saved
 
-It comes back as a `summary`, never the environment itself: recap that briefly, tagged from `fromFiles`, naming what `notInFiles` lists as assumed. Ask nothing, and never show inspection ids:
-
-> **Support bot** (from `app/prompts/support.py`, `app/tools.py`): 3 roles, 12 tools, 4 rules.
-> Assumed, because the repo showed nothing: audit logging, risky actions.
-
-`build-simulation-env` saved it: later runs on that connection reuse it. No `saved` in the reply means nothing was kept: do what its `next` says.
+It comes back as a `summary`, never the environment itself. Recap nothing. Ask nothing, and never show inspection ids. `build-simulation-env` saved it: later runs on that connection reuse it. No `saved` in the reply means nothing was kept: do what its `next` says.
 
 On a package, then ask once: "Does your agent sign people in by role? If so, give me a test token for each of these roles: <roles>." With tokens, `set-role-logins`. Without them the run still works. A first audit (no package) skips it: role logins and the sandbox come after its report.
 
@@ -80,10 +75,7 @@ A leaked address: `rotate-sandbox`, then wire again.
 
 ## 7. Audit
 
-We stress test your agent inside the simulation environment. Every result is
-judged by AI models your agent never runs on. Say that when you introduce the audit.
-
-`run-inspection`, then poll `get-run` without busy-looping. Read progress as "N of T inspections run so far, P passed, F failed", never a percentage or a time estimate. A free audit's progress has only `failed`: "<n> gaps found so far", nothing else. On clients with MCP Apps the poll draws the Audit screen, the categories grouped into the six bundles, or a free audit's gaps found so far. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
+`run-inspection`, then do what its `next` says. In Claude Code it holds until the run ends and shows its progress in one line that updates itself; elsewhere `get-run` waits for news before it answers. Between calls say nothing but the lines in `say`: no progress read-outs, no recaps, never a percentage or a time estimate. On clients with MCP Apps the run card refreshes itself. A refusal names its way out: follow it. `stop-run` stops a run and keeps what finished as a partial report; tell the user first.
 
 Sandbox answer is no: start nothing. Help them make a test copy with fake data; a local one goes out through the tunnel, with a key on it.
 
