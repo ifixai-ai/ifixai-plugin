@@ -3,6 +3,12 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.19 (2026-11-08)
+
+- "Audit my agent with iFixAi." is enough: with your agent's code in the folder, Claude asks nothing and reads the test copy, the key's name, role logins and the sandbox from the code.
+- A quieter audit: the step list shows only when a step changes, each gap category once, and the report link once. In Claude Code the running audit is one line that updates itself.
+- iFixAi's own steps run without a permission prompt: its tools, and only the exact commands they hand out. Anything else asks as usual.
+
 ## 0.4.18 (2026-11-08)
 
 - No demo audit: a new user starts with their plan and their own audit.
