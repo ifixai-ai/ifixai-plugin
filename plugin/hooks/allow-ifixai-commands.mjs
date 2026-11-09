@@ -7,8 +7,9 @@
 // No Node, an error, or anything unexpected: no answer, so Claude Code asks as it always does.
 import { closeSync, openSync, readSync, statSync } from "node:fs";
 
-/** Tools of this plugin's iFixAi server, as Claude Code names them. */
-const OUR_TOOL = /^mcp__plugin_ifixai_ifixai__/;
+/** iFixAi's tools, as Claude Code names them: this plugin's server, the claude.ai connector ("iFixAi"), or one
+ *  added by hand as "ifixai". */
+const OUR_TOOL = /^mcp__(?:plugin_ifixai_ifixai|claude_ai_ifixai|ifixai)__/i;
 
 /** lock-agent's Docker commands. `docker-compose` is the same with the older binary. */
 const COMPOSE = "-f .ifixai/compose.yaml";

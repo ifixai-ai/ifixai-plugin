@@ -3,7 +3,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "mcp__plugin_ifixai_ifixai__.*",
+        "matcher": "^mcp__(plugin_ifixai_ifixai|claude_ai_[Ii][Ff]ix[Aa][Ii]|ifixai)__.*$",
         "hooks": [
           {
             "type": "command",
