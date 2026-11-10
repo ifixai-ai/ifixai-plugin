@@ -1,0 +1,27 @@
+{
+  "description": "Lets iFixAi's own steps run without a permission prompt: iFixAi's tools, the exact commands they hand out (with plain reads chained on) and, only after lock-agent in the same session, the locked container's own steps. Anything else asks as usual.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__(plugin_ifixai_ifixai|claude_ai_[Ii][Ff]ix[Aa][Ii]|ifixai)__.*$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"An iFixAi tool\"}}'",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node >/dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/hooks/allow-ifixai-commands.mjs\" || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
