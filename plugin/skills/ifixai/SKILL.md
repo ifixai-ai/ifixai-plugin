@@ -26,7 +26,7 @@ The free audit's path is short, with no question.
 - Find the agent as in 1, and its test copy: a local or staging URL in the code, never a live production one.
 - Connect it (3), build its simulation environment (4), then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick, no role logins: it runs as it is.
 - While it runs, say only the gap lines a reply's `say` gives, like "Found a critical gap in Fabrication.", each once. Never how many inspections it runs or has run, never what a gap is.
-- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical. Your free report opens the <s> most critical: <link>", and nothing after it.
+- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical: <link>", and nothing after it.
 ## 1. Find the agent
 
 ```bash
