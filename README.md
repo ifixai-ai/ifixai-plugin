@@ -26,10 +26,12 @@ the order to call things in, and a hook that lets iFixAi's own steps run without
 a permission prompt: iFixAi's tools, and only the exact commands they hand out
 (the upload of the files picked from your repo and the key command), also with
 plain reads and checks like `ls`, `cat`, `git log`, `which` or `test -f`
-chained on. The locked container's steps (its branch, its Docker commands and
-its files inside `.ifixai/`) are allowed only after `lock-agent` in the same
-session. Anything else asks as usual. There is no engine here. The
-inspections, probes, judges and scoring live in iFixAi.
+chained on. A `cd` into the folder Claude already works in and a version
+check like `node --version` count as reads too. The locked container's steps
+(its branch, its Docker commands and its files inside `.ifixai/`) are allowed
+only after `lock-agent` in the same session. Anything else asks as usual.
+There is no engine here. The inspections, probes, judges and scoring live in
+iFixAi.
 
 ## Two tiers
 

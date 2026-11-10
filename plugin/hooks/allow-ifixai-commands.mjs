@@ -9,7 +9,8 @@
 //   (docker compose -f .ifixai/compose.yaml ps or logs) or mkdir -p inside .ifixai/;
 // - a plain read of files in the working folder (ls, cat, grep, git log, a sed that only substitutes...), never an
 //   env file but the examples (.env.example...); echo or printf, with at most `$?` or a `$( )` judged by these same
-//   rules inside a double-quoted argument; which or command -v; a test or [ ] that checks a file or a string.
+//   rules inside a double-quoted argument; which or command -v; a test or [ ] that checks a file or a string; a cd
+//   into the folder it already runs in; a version check like node --version.
 // At least one part is iFixAi's own. Once lock-agent answered, writing or editing files inside .ifixai/ is allowed
 // too. No Node, an error, or anything it can't read for sure: no answer, so Claude Code asks as it always does.
 import { closeSync, lstatSync, openSync, readSync, realpathSync, statSync } from "node:fs";
@@ -375,6 +376,30 @@ function fileCheck(words) {
 /** A command's name, as which and command -v look it up. */
 const NAME = /^[A-Za-z0-9_][A-Za-z0-9._+-]*$/;
 
+/** cd that lands where the command already runs, so the parts after it are judged in the same folder: one path, from
+ *  / or ./ (a bare name goes through CDPATH), with no `..` (a shell may take it through a link or not). */
+function cdHere(args, cwd) {
+  if (args.length !== 1) return false;
+  const [target] = args;
+  if (!(target.startsWith("/") || target === "." || target.startsWith("./")) || target.split("/").includes("..")) return false;
+  try {
+    return realpathSync(resolve(cwd, target)) === realpathSync(cwd);
+  } catch (error) {
+    // not there, or not a folder
+    if (error.code === "ENOENT" || error.code === "ENOTDIR") return false;
+    throw error;
+  }
+}
+
+/** Version flags that run nothing from the folder, by bare tool name. Never python -v (verbose mode), and never yarn,
+ *  pnpm or bun: yarnPath and packageManager can run or fetch the repo's own code. */
+const VERSION_FLAGS = new Map([
+  ...["npx", "pip", "pip3", "docker-compose", "git", "colima", "uv", "curl"].map((name) => [name, ["--version"]]),
+  ...["node", "npm", "docker"].map((name) => [name, ["--version", "-v"]]),
+  ...["python", "python3"].map((name) => [name, ["--version", "-V"]]),
+]);
+const versionCheck = ([name, flag, ...more]) => more.length === 0 && VERSION_FLAGS.get(name)?.includes(flag) === true;
+
 /** After lock-agent: a look at the kit's containers. */
 function kitRead(words) {
   const at = words[0] === "docker" && words[1] === "compose" ? 2 : words[0] === "docker-compose" ? 1 : -1;
@@ -399,6 +424,8 @@ function partKind(words, ctx) {
   if (first.value === "echo" || first.value === "printf") return rest.every((w) => w.kind !== "test") ? "read" : null;
   if (!rest.every((w) => w.kind === "plain")) return null;
   const values = words.map((w) => w.value);
+  if (first.value === "cd") return cdHere(values.slice(1), ctx.cwd) ? "read" : null;
+  if (versionCheck(values)) return "read";
   if (first.value === "which") return rest.length && values.slice(1).every((v) => NAME.test(v)) ? "read" : null;
   if (first.value === "command") return rest.length > 1 && values[1] === "-v" && values.slice(2).every((v) => NAME.test(v)) ? "read" : null;
   if (first.value === "sed") return sedRead(values.slice(1), ctx.cwd) ? "read" : null;
