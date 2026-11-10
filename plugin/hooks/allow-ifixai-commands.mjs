@@ -7,7 +7,9 @@
 //   files, the key command, lock-agent's steps), its output at most sent to /dev/null or stderr joined to stdout;
 // - once lock-agent answered in this session: the locked container's own commands, a look at its containers
 //   (docker compose -f .ifixai/compose.yaml ps or logs) or mkdir -p inside .ifixai/;
-// - a plain read of files in the working folder (ls, cat, grep, git log...), never an env file.
+// - a plain read of files in the working folder (ls, cat, grep, git log, a sed that only substitutes...), never an
+//   env file but the examples (.env.example...); echo or printf, with at most `$?` or a `$( )` judged by these same
+//   rules inside a double-quoted argument; which or command -v; a test or [ ] that checks a file or a string.
 // At least one part is iFixAi's own. Once lock-agent answered, writing or editing files inside .ifixai/ is allowed
 // too. No Node, an error, or anything it can't read for sure: no answer, so Claude Code asks as it always does.
 import { closeSync, lstatSync, openSync, readSync, realpathSync, statSync } from "node:fs";
@@ -166,7 +168,7 @@ function landsAt(filePath, cwd, base) {
 const outside = (rel) => rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel);
 
 /** Output sent nowhere, or stderr joined to stdout and back: the only redirects a part may carry. */
-const QUIET = /(?:[12]?>&[12]|&>[ \t]*\/dev\/null|[12]?>[ \t]*\/dev\/null)(?=[ \t\n;&|]|$)/y;
+const QUIET = /(?:[12]?>&[12]|&>[ \t]*\/dev\/null|[12]?>[ \t]*\/dev\/null)(?=[ \t\n;&|)]|$)/y;
 
 /** Where a command's parts meet. `&` alone, `|&`, `;;` and the like are never read as one: no answer. */
 const SEPARATOR = /&&|\|\||;(?!;)|\n|\|(?!&)/y;
@@ -174,11 +176,12 @@ const SEPARATOR = /&&|\|\||;(?!;)|\n|\|(?!&)/y;
 /** Shell syntax outside quotes that expands, substitutes, redirects, globs, groups or comments: no answer. */
 const UNSAFE = /[$`\\()<>{}*?[\]#!~\x00-\x1f\x7f]/;
 
-/** Where a part ends: the command's end or a separator, `&` included so that a lone one is refused after. */
-const atPartEnd = (command, i) => i >= command.length || ";|&\n".includes(command[i]);
+/** Where a part ends: the command's end or a separator, `&` included so that a lone one is refused after. Inside
+ *  a `$( )`, its `)` too. */
+const atPartEnd = (command, i, inner) => i >= command.length || ";|&\n".includes(command[i]) || (inner && command[i] === ")");
 
 /** The end of a handed-out command at `i`, past any quiet redirects, when the part ends there; else -1. */
-function handedOutEnd(command, i, allowed) {
+function handedOutEnd(command, i, allowed, inner) {
   for (const handed of allowed) {
     if (!command.startsWith(handed, i)) continue;
     let j = i + handed.length;
@@ -191,16 +194,42 @@ function handedOutEnd(command, i, allowed) {
         continue;
       }
       // anything glued on (`cmd'x`, `cmdx`) is another command
-      if (k >= command.length || (atPartEnd(command, k) && !command.startsWith("&>", k))) return k;
+      if (k >= command.length || (atPartEnd(command, k, inner) && !command.startsWith("&>", k))) return k;
       break;
     }
   }
   return -1;
 }
 
+/** A double-quoted string from its opening quote at `i`: where it ends, its text, and whether it holds `$?` or a
+ *  `$( )`, which is judged as a command of its own and never nests. Null for anything else that expands. */
+function doubleQuoted(command, i, ctx, inner) {
+  let text = "";
+  let dynamic = false;
+  for (let j = i + 1; j < command.length; ) {
+    const c = command[j];
+    if (c === '"') return { end: j + 1, text, dynamic };
+    if (c === "$" && command[j + 1] === "?") {
+      dynamic = true;
+      j += 2;
+    } else if (c === "$" && command[j + 1] === "(" && command[j + 2] !== "(" && !inner) {
+      const sub = judge(command, j + 2, ctx, true);
+      if (!sub) return null;
+      dynamic = true;
+      j = sub.end + 1;
+    } else if ("$`\\!".includes(c)) {
+      return null;
+    } else {
+      text += c;
+      j++;
+    }
+  }
+  return null;
+}
+
 /** A part's words with their quotes taken off, and where it ends; null for anything not plainly words. Single
- *  quotes are literal; double quotes only when nothing inside them expands. */
-function wordsOf(command, i) {
+ *  quotes are literal. A word's kind: plain; dynamic, with `$?` or a `$( )` in it; or test's bare `[`, `]` or `!=`. */
+function wordsOf(command, i, ctx, inner) {
   const words = [];
   for (;;) {
     while (command[i] === " " || command[i] === "\t") i++;
@@ -209,49 +238,70 @@ function wordsOf(command, i) {
       i = QUIET.lastIndex;
       continue;
     }
-    if (atPartEnd(command, i)) return { words, end: i };
-    let word = "";
-    while (!atPartEnd(command, i) && command[i] !== " " && command[i] !== "\t") {
+    if (atPartEnd(command, i, inner)) return { words, end: i };
+    const bare = /\[|\]|!=/y;
+    bare.lastIndex = i;
+    if (bare.test(command) && (command[bare.lastIndex] === " " || command[bare.lastIndex] === "\t" || atPartEnd(command, bare.lastIndex, inner))) {
+      words.push({ value: command.slice(i, bare.lastIndex), kind: "test" });
+      i = bare.lastIndex;
+      continue;
+    }
+    let value = "";
+    let kind = "plain";
+    while (!atPartEnd(command, i, inner) && command[i] !== " " && command[i] !== "\t") {
       const c = command[i];
-      if (c === "'" || c === '"') {
-        const close = command.indexOf(c, i + 1);
+      if (c === "'") {
+        const close = command.indexOf("'", i + 1);
         if (close < 0) return null;
-        const inside = command.slice(i + 1, close);
-        if (c === '"' && /[$`\\!]/.test(inside)) return null;
-        word += inside;
+        value += command.slice(i + 1, close);
         i = close + 1;
+      } else if (c === '"') {
+        const quoted = doubleQuoted(command, i, ctx, inner);
+        if (!quoted) return null;
+        if (quoted.dynamic) kind = "dynamic";
+        value += quoted.text;
+        i = quoted.end;
+      } else if (c === "$" && command[i + 1] === "?") {
+        kind = "dynamic";
+        i += 2;
       } else if (UNSAFE.test(c)) {
         return null;
       } else {
-        word += c;
+        value += c;
         i++;
       }
     }
-    words.push(word);
+    words.push({ value, kind });
   }
 }
 
-/** A word that stays in the working folder and off its secrets: no env file, no path from / or ~, no `..`. */
-function plainWord(word) {
-  if (/\.env/i.test(word)) return false;
+/** The example env files, which hold no secrets: the one exception to the env-file rule. */
+const ENV_EXAMPLES = new Set([".env.example", ".env.sample", ".env.template", ".env.dist"]);
+const envFile = (name) => /\.env/i.test(name) && !ENV_EXAMPLES.has(name);
+
+/** A path that stays in the working folder: none from / or ~, no `..`, no path in a flag. */
+function inFolder(word) {
   if (word.split("=").some((piece) => piece.startsWith("/") || piece.startsWith("~"))) return false;
   if (word.split(/[/=]/).includes("..")) return false;
   return !(word.startsWith("-") && word.includes("/"));
 }
 
+/** A word that stays in the working folder and off its secrets: no env file but the examples. */
+const plainWord = (word) => inFolder(word) && !word.split(/[/=]/).some(envFile);
+
 /** Whether a path a read names lands inside the working folder through any links, and on no env file. */
 function readable(path, cwd) {
   const rel = landsAt(path, cwd, realpathSync(cwd));
-  return rel !== null && (rel === "" || (!outside(rel) && !rel.split(sep).some((part) => /^\.env/i.test(part))));
+  return rel !== null && (rel === "" || (!outside(rel) && !rel.split(sep).some(envFile)));
 }
 
 /** Plain reads, as Claude Code counts them read-only, minus the forms that write, run code or read a whole tree. */
-const READS = new Set(["ls", "cat", "head", "tail", "wc", "grep", "echo", "printf", "pwd", "true", "sleep", "sort", "uniq", "git"]);
+const READS = new Set(["ls", "cat", "head", "tail", "wc", "grep", "pwd", "true", "sleep", "sort", "uniq", "git"]);
 const FILE_READS = new Set(["ls", "cat", "head", "tail", "wc", "grep", "sort"]);
 const GIT_READS = new Set(["status", "log", "diff", "show", "ls-files", "ls-tree", "rev-parse"]);
 
 function plainRead([name, ...args], cwd) {
-  if (!READS.has(name)) return false;
+  if (!READS.has(name) || !args.every(plainWord)) return false;
   const flags = args.filter((a) => a.length > 1 && a.startsWith("-"));
   // grep through a folder can reach an env file without naming it
   if (name === "grep" && flags.some((f) => /^-[^-]*[rRdD]/.test(f) || /^--[rd]/.test(f))) return false;
@@ -264,6 +314,67 @@ function plainRead([name, ...args], cwd) {
   return !FILE_READS.has(name) || args.every((a) => (a.length > 1 && a.startsWith("-")) || readable(a, cwd));
 }
 
+/** A sed script made only of s commands joined by `;`, flags from g, p, I and digits: no w, e, r or any other
+ *  command, so it writes nothing, runs nothing and reads no other file. */
+function substitutesOnly(script) {
+  let i = 0;
+  for (;;) {
+    while (script[i] === " ") i++;
+    const delimiter = script[i + 1];
+    if (script[i] !== "s" || !delimiter || delimiter === "\\" || delimiter === "\n") return false;
+    i += 2;
+    for (let field = 0; field < 2; field++) {
+      for (;;) {
+        const c = script[i];
+        if (c === undefined || c === "\n") return false;
+        if (c === "\\") {
+          if (script[i + 1] === undefined || script[i + 1] === "\n") return false;
+          i += 2;
+          continue;
+        }
+        i++;
+        if (c === delimiter) break;
+      }
+    }
+    while (/^[gpI0-9]$/.test(script[i] ?? "")) i++;
+    while (script[i] === " ") i++;
+    if (i === script.length) return true;
+    if (script[i] !== ";") return false;
+    i++;
+  }
+}
+
+/** sed that only substitutes: -E, -n, -r and one script, given as -e or first; its files read as cat reads them. */
+function sedRead(args, cwd) {
+  let script;
+  const files = [];
+  for (let k = 0; k < args.length; k++) {
+    const a = args[k];
+    if (a === "-e") {
+      if (script !== undefined || k + 1 >= args.length) return false;
+      script = args[++k];
+    } else if (a.length > 1 && a.startsWith("-")) {
+      if (!/^-[Enr]+$/.test(a)) return false;
+    } else if (script === undefined) {
+      script = a;
+    } else {
+      files.push(a);
+    }
+  }
+  return script !== undefined && substitutesOnly(script) && files.every((f) => plainWord(f) && readable(f, cwd));
+}
+
+/** test or [ ]: one file or string check, so it reads whether a file is there and never what is in it. */
+const FILE_CHECKS = new Set(["-f", "-d", "-e", "-s", "-r", "-x", "-n", "-z"]);
+function fileCheck(words) {
+  const operand = (w) => w.kind === "plain" && inFolder(w.value);
+  if (words.length === 2) return words[0].kind === "plain" && FILE_CHECKS.has(words[0].value) && operand(words[1]);
+  return words.length === 3 && operand(words[0]) && (words[1].value === "=" || (words[1].kind === "test" && words[1].value === "!=")) && operand(words[2]);
+}
+
+/** A command's name, as which and command -v look it up. */
+const NAME = /^[A-Za-z0-9_][A-Za-z0-9._+-]*$/;
+
 /** After lock-agent: a look at the kit's containers. */
 function kitRead(words) {
   const at = words[0] === "docker" && words[1] === "compose" ? 2 : words[0] === "docker-compose" ? 1 : -1;
@@ -275,31 +386,57 @@ function kitMkdir([name, flag, ...paths], cwd) {
   return name === "mkdir" && flag === "-p" && paths.length > 0 && paths.every((p) => !p.startsWith("-") && inKitFolder(p, cwd, true));
 }
 
-/** Whether every part of the command is allowed and at least one is iFixAi's own. */
-function allowed(command, session, cwd) {
-  const handed = [...session.commands, ...(session.locked ? KIT_COMMANDS : [])].filter(Boolean).sort((a, b) => b.length - a.length);
+/** What a part that isn't a handed-out command is: "ours" (the kit's), "read", or null for anything else. */
+function partKind(words, ctx) {
+  const [first, ...rest] = words;
+  if (first.kind === "test" && first.value === "[") {
+    const last = rest.at(-1);
+    return last?.kind === "test" && last.value === "]" && fileCheck(rest.slice(0, -1)) ? "read" : null;
+  }
+  if (first.kind !== "plain") return null;
+  if (first.value === "test") return fileCheck(rest) ? "read" : null;
+  // echo and printf read nothing: their words are only printed, `$?` and a judged `$( )` included
+  if (first.value === "echo" || first.value === "printf") return rest.every((w) => w.kind !== "test") ? "read" : null;
+  if (!rest.every((w) => w.kind === "plain")) return null;
+  const values = words.map((w) => w.value);
+  if (first.value === "which") return rest.length && values.slice(1).every((v) => NAME.test(v)) ? "read" : null;
+  if (first.value === "command") return rest.length > 1 && values[1] === "-v" && values.slice(2).every((v) => NAME.test(v)) ? "read" : null;
+  if (first.value === "sed") return sedRead(values.slice(1), ctx.cwd) ? "read" : null;
+  if (ctx.locked && values.every(plainWord) && (kitRead(values) || kitMkdir(values, ctx.cwd))) return "ours";
+  return plainRead(values, ctx.cwd) ? "read" : null;
+}
+
+/** The parts from `i`, each allowed: whether one is iFixAi's own, and where they end (inside a `$( )`, at its `)`).
+ *  Null when any part isn't allowed. */
+function judge(command, i, ctx, inner) {
   let ours = false;
-  let i = 0;
   for (;;) {
     while (command[i] === " " || command[i] === "\t" || command[i] === "\n") i++;
     // nothing, or nothing after an operator
-    if (i >= command.length) return false;
-    const end = handedOutEnd(command, i, handed);
+    if (atPartEnd(command, i, inner)) return null;
+    const end = handedOutEnd(command, i, ctx.handed, inner);
     if (end >= 0) {
       ours = true;
       i = end;
     } else {
-      const part = wordsOf(command, i);
-      if (!part || !part.words.length || !part.words.every(plainWord)) return false;
-      if (session.locked && (kitRead(part.words) || kitMkdir(part.words, cwd))) ours = true;
-      else if (!plainRead(part.words, cwd)) return false;
+      const part = wordsOf(command, i, ctx, inner);
+      const kind = part && part.words.length ? partKind(part.words, ctx) : null;
+      if (!kind) return null;
+      if (kind === "ours") ours = true;
       i = part.end;
     }
-    if (i >= command.length) return ours;
+    if (inner ? command[i] === ")" : i >= command.length) return { ours, end: i };
     SEPARATOR.lastIndex = i;
-    if (!SEPARATOR.test(command)) return false;
+    if (!SEPARATOR.test(command)) return null;
     i = SEPARATOR.lastIndex;
   }
+}
+
+/** Whether every part of the command is allowed and at least one is iFixAi's own. */
+function allowed(command, session, cwd) {
+  const handed = [...session.commands, ...(session.locked ? KIT_COMMANDS : [])].filter(Boolean).sort((a, b) => b.length - a.length);
+  const parts = judge(command, 0, { handed, locked: session.locked, cwd }, false);
+  return parts !== null && parts.ours && parts.end === command.length;
 }
 
 function allow(reason) {
