@@ -73,6 +73,8 @@ A leaked address: `rotate-sandbox`, then wire again.
 
 At the end, give the user `get-deliverable`'s message and link as they stand. Describe findings only when the user asks: then call `get-findings` and keep to its findings and proof, in its order, with no count, score or fix.
 
+Asked what one finding means: `explain-finding` with the `runId` and that finding's `ref` from `get-findings`, said as it stands. Asked to keep a failed one from coming back: `add-regression-test` with the same two, then write `.ifixai/regressions.yaml` as its `write` says and show the user the change.
+
 ## Honest limits
 
 - A clean result is a diagnostic, not a certification.
