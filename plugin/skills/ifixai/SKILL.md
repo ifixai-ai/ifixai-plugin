@@ -9,12 +9,12 @@ Three stages: **Connect** the agent, build its **Simulation environment** (what 
 
 Every audit needs an HTTP endpoint iFixAi can reach. An agent that runs only on this machine runs in a locked Docker container by default: `lock-agent` gives the files and steps, a tunnel included. Only if the user insists on skipping Docker does it go out through a bare quick tunnel, `cloudflared tunnel --url http://localhost:<port>`: `test-connection` says what to do with the address it prints.
 
-With the agent's code in this folder, ask the user nothing: "Audit my agent with iFixAi." is the go-ahead, for the free audit and a package audit alike, and the code answers the rest (the test copy, the key's name, role logins, the sandbox). Without the code (a web chat), ask only the address of a test copy of the agent and what it does. The package rules and "findings, never fixes" are in the server instructions. They are not repeated here.
+With the agent's code in this folder, ask the user nothing but `get-plan`'s one question when there is nothing to run: "Audit my agent with iFixAi." is the go-ahead to run an audit they hold, never to claim one, and the code answers the rest (the test copy, the key's name, role logins, the sandbox). Without the code (a web chat), ask only the address of a test copy of the agent and what it does. The package rules and "findings, never fixes" are in the server instructions. They are not repeated here.
 
 ## 0. Plan
 
 `get-plan`.
-- `free`: `claim-fast-audit` (a request to audit is the request to claim it), or `redeem-code` when they gave a code. A refused claim says what to do: relay it as it stands.
+- `free`: ask the user once the question `next` names: run a free fast audit now (`claim-fast-audit`), redeem a promo code (`redeem-code`), or ask us for a package (`request-access` with a package id from `packages`). The fast audit drops out once used. Then call the tool for their answer. A refused claim says what to do: relay it as it stands.
 - `paid`: read back the package and the audits left this month with the reset date.
 - `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset. A Free audit left: take its path below.
 - A grant used up or expired: say so, then the `upgrade` line.
