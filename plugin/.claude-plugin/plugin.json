@@ -11,6 +11,7 @@
   "privacyPolicyUrl": "https://ifixai.ai/privacy",
   "icon": "./.claude-plugin/icon.png",
   "repository": "https://github.com/ifixai-ai/ifixai-plugin",
+  "license": "Apache-2.0",
   "keywords": [
     "audit",
     "red-teaming",
