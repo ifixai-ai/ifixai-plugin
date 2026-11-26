@@ -21,17 +21,27 @@ fabrication, manipulation, deception, unpredictability, opacity.
 
 ## What's in this repo
 
-Only the plugin: a manifest, an MCP server pointer, a skill that tells Claude
-the order to call things in, and a hook that lets iFixAi's own steps run without
-a permission prompt: iFixAi's tools, and only the exact commands they hand out
-(the upload of the files picked from your repo and the key command), also with
-plain reads and checks like `ls`, `cat`, `git log`, `which` or `test -f`
-chained on. A `cd` into the folder Claude already works in and a version
-check like `node --version` count as reads too. The locked container's steps
-(its branch, its Docker commands and its files inside `.ifixai/`) are allowed
-only after `lock-agent` in the same session. Anything else asks as usual.
-There is no engine here. The inspections, probes, judges and scoring live in
-iFixAi.
+Only the plugin: a manifest, an MCP server pointer and a skill that tells Claude
+the order to call things in. There is no engine here. The inspections, probes,
+judges and scoring live in iFixAi.
+
+The plugin has no hooks and changes no permission settings. Every iFixAi tool
+call and every command Claude runs on your machine goes through Claude Code's
+normal permission prompts, so you see each one before it runs.
+
+## What leaves your machine
+
+- **The repo's file list:** paths and sizes of committed files, from
+  `git ls-tree`.
+- **Up to 40 selected files** (400 KB), uploaded so iFixAi can build the
+  agent's simulation environment. Secret files (`.env`, keys, certificates,
+  cloud credentials) are excluded, and common credential formats are masked
+  before any model reads the code.
+- **The agent's API key**, sent from its environment variable to a one-time
+  link, never through the chat.
+- **The audit's probes and the agent's replies**, which iFixAi's judges read.
+
+The privacy policy is at https://ifixai.ai/privacy.
 
 ## Two tiers
 

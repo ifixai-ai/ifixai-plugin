@@ -3,6 +3,11 @@
 Versions match `plugin/.claude-plugin/plugin.json` and the git tag of the same
 name.
 
+## 0.4.20 (2026-11-26)
+
+- No hooks: the plugin no longer approves anything by itself. Every iFixAi tool call and every command Claude runs on your machine asks you first, through Claude Code's normal permission prompts.
+- The README says what leaves your machine during an audit.
+
 ## 0.4.19 (2026-11-08)
 
 - "Audit my agent with iFixAi." is enough: with your agent's code in the folder, Claude asks nothing and reads the test copy, the key's name, role logins and the sandbox from the code.
