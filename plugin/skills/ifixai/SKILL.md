@@ -9,12 +9,12 @@ Three stages: **Connect** the agent, build its **Simulation environment** (what 
 
 Every audit needs an HTTP endpoint iFixAi can reach. An agent that runs only on this machine runs in a locked Docker container by default: `lock-agent` gives the files and steps, a tunnel included. Only if the user insists on skipping Docker does it go out through a bare quick tunnel, `cloudflared tunnel --url http://localhost:<port>`: `test-connection` says what to do with the address it prints.
 
-With the agent's code in this folder, ask the user nothing but `get-plan`'s one question when there is nothing to run: "Audit my agent with iFixAi." is the go-ahead to run an audit they hold, never to claim one, and the code answers the rest (the test copy, the key's name, role logins, the sandbox). Without the code (a web chat), ask only the address of a test copy of the agent and what it does. The package rules and "findings, never fixes" are in the server instructions. They are not repeated here.
+With the agent's code in this folder, ask the user nothing but which agent, when there are several: "Audit my agent with iFixAi." runs an audit they hold, else claims the free audit (`claim-fast-audit`), or redeems a code given with it (`redeem-code`), and the code answers the rest (the test copy, the key's name, role logins, the sandbox). Without the code (a web chat), ask once, only for the address of a test copy of the agent (staging or local, never live) and what it does. The package rules and "findings, never fixes" are in the server instructions. They are not repeated here.
 
 ## 0. Plan
 
 `get-plan`.
-- `free`: ask the user once the question `next` names: run a free fast audit now (`claim-fast-audit`), redeem a promo code (`redeem-code`), or ask us for a package (`request-access` with a package id from `packages`). The fast audit drops out once used. Then call the tool for their answer. A refused claim says what to do: relay it as it stands.
+- `free`: on an audit request, `claim-fast-audit`, or `redeem-code` when they gave a code with it; ask nothing first. Asked anything else, claim nothing. A refused claim says what to do: relay it as it stands.
 - `paid`: read back the package and the audits left this month with the reset date.
 - `no package`: it runs what `grants` holds, hosted; read that back. A grant is used once by its date, never reset. A Free audit left: take its path below.
 - A grant used up or expired: say so, then the `upgrade` line.
@@ -26,7 +26,7 @@ The free audit's path is short, with no question.
 - Find the agent as in 1, and its test copy: a local or staging URL in the code, never a live production one.
 - Connect it (3), build its simulation environment (4), then `preview-run` with the `connectionId`, reading nothing out of it, and `run-inspection` with `targetIsSandboxed: true`. No bundles, no sandbox pick, no role logins: it runs as it is.
 - While it runs, say only the gap lines a reply's `say` gives, like "Found a critical gap in Fabrication.", each once. Never how many inspections it runs or has run, never what a gap is.
-- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical: <link>", and nothing after it.
+- At the end, give `get-deliverable`'s line as it stands, "Your audit found <n> gaps, <c> of them critical: <link>", then its one line asking for a promo code, and nothing else. A code they give: `redeem-code`. None: offer `request-access`.
 ## 1. Find the agent
 
 ```bash
@@ -34,11 +34,13 @@ grep -rniE "IFIXAI_HTTP_ENDPOINT|OPENAI_BASE_URL|ANTHROPIC_BASE_URL|AGENT_URL|ba
 ls .claude/agents/ agents/ 2>/dev/null; grep -rlniE "system_prompt|SystemMessage|Agent\(|create_agent|crewai|langgraph|autogen" --include="*.py" --include="*.ts" --include="*.yaml" .
 ```
 
-Accept a URL the repo states as the agent's own chat API, in any request format: when it isn't OpenAI's, give `create-connection` the `requestBody` and `replyPath` the code shows. An MCP `url` is a tool the agent calls, not its endpoint. The address to register is the test copy's: a local or staging URL, with seeded data, never a live production one. Nothing found in the code: ask only the address of a test copy and what it does.
+Accept a URL the repo states as the agent's own chat API, in any request format: when it isn't OpenAI's, give `create-connection` the `requestBody` and `replyPath` the code shows. An MCP `url` is a tool the agent calls, not its endpoint. The address to register is the test copy's: a local or staging URL, with seeded data, never a live production one. Nothing found in the code: ask once, only for the address of a test copy (staging or local, never live) and what it does.
 
 ## 2. Pick it
 
-Several agents: the one the user named, else the one the repo's entry point serves, one run each. What it is for comes from its code. Ask nothing.
+One agent: take it and ask nothing. What it is for comes from its code.
+
+Several agents: the one the user named, else ask once which one, one run each.
 ## 3. Connect
 
 `list-connections`, else `create-connection` then `test-connection`. A row with `saved_environment` already has its simulation environment: skip 4 and 5, ask nothing. Read failures back plainly: an unreachable host, a refused key and an unreadable reply are different problems. Read out what `test-connection` says about role logins and `forwarding` as it stands.
@@ -49,7 +51,7 @@ The agent's key never goes through chat: never ask for it in chat, and never rea
 
 It is built from the whole agent repo: the selected files, system prompt included, go to iFixAi. `select-repo-files` with the list that `test-connection`'s `repo_files.command` prints, run as it stands from the repo root, never a listing of your own. With a shell, run its `upload.command` from the repo root as it stands, then `build-simulation-env` with its `uploadId`: never retype a file. Without one, or if the command fails, send the files it returns as `files`, each with its exact text and the sha256 that `shasum -a 256 <file>` prints for it (none without a shell). Pass the purpose if they gave one, the commit as `source` and the `connectionId`, so it saves the environment itself. Several `candidates`: the agent picked in 2. Refused: do what the refusal says, then author again. Never hand-write around a refusal.
 
-Last resort, only when there is no repo this session can read: say "I can't read the repo from here, so describe it instead", call `build-simulation-env` with no input and give them the brief it returns to paste into their own coding agent. Its answer goes back as `markdown`, with the `connectionId`.
+Last resort, only when there is no repo this session can read: `build-simulation-env` with the `connectionId` and, as `markdown`, what the user said the agent does, in their words. Ask nothing more.
 
 ## 5. Saved
 
